@@ -1,17 +1,18 @@
 import React, { useState } from 'react'
 
-export default function LoginModal({ isOpen, onClose }) {
+export default function LoginModal({ isOpen, onClose, onSignupClick }) {
   const [mobileNo, setMobileNo] = useState('')
   const [password, setPassword] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
     console.log('Login attempt:', { mobileNo, password })
-    // Add login logic here
+    
   }
 
   if (!isOpen) return null
 
+  
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -53,7 +54,7 @@ export default function LoginModal({ isOpen, onClose }) {
         <div className="modal-footer">
           <p>
             Don't have an account?{' '}
-            <a href="#signup" className="signup-link">Sign up here</a>
+            <button onClick={onSignupClick} className="signup-link-btn">Sign up here</button>
           </p>
         </div>
       </div>

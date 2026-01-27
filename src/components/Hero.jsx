@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 export default function About() {
   return (
@@ -10,7 +11,7 @@ export default function About() {
           designed for your daily wellness. Trusted by families, crafted with care.
         </p>
         <div className="hero-cta">
-          <button>Shop Now</button>
+          <Link to="/products" className="cta-button">Shop Now</Link>
           <button className="secondary">Learn More</button>
         </div>
         <div className="hero-image">

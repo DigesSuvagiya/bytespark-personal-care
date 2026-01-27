@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import LoginModal from './LoginModal'
+import SignupModal from './SignupModal'
 
 export default function Navigation() {
   const [isLoginOpen, setIsLoginOpen] = useState(false)
+  const [isSignupOpen, setIsSignupOpen] = useState(false)
 
   return (
     <>
@@ -12,8 +14,8 @@ export default function Navigation() {
             Byte<span>spark</span> Personal Care
           </div>
           <ul className="navbar-menu">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#products">Products</a></li>
+            <li><a href="/">Home</a></li>
+            <li><a href="/products">Products</a></li>
             <li><a href="#cart">Cart</a></li>
             <li>
               <button 
@@ -26,7 +28,14 @@ export default function Navigation() {
           </ul>
         </div>
       </nav>
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
-    </>
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} onSignupClick={() => {
+        setIsLoginOpen(false)
+        setIsSignupOpen(true)
+      }} />
+      <SignupModal isOpen={isSignupOpen} onClose={() => setIsSignupOpen(false)}  onLoginClick={()=> {
+        setIsLoginOpen(true)
+        setIsSignupOpen(false)
+      }} />
+    </> 
   )
 }
