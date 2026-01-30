@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import LoginModal from './LoginModal'
 import SignupModal from './SignupModal'
 import CartModal from './CartModal'
@@ -36,8 +37,8 @@ export default function Navigation() {
             Byte<span>spark</span> Personal Care
           </div>
           <ul className="navbar-menu">
-            <li><a href="/">Home</a></li>
-            <li><a href="/products">Products</a></li>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/products">Products</Link></li>
             <li>
               <button
                 className="cart-link"
