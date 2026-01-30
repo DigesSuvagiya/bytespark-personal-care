@@ -11,7 +11,7 @@ export default function About() {
           designed for your daily wellness. Trusted by families, crafted with care.
         </p>
         <div className="hero-cta">
-          <Link to="/products" className="cta-button">Shop Now</Link>
+          <Link to="/products" className="cta-button">Our Products</Link>
           <button className="secondary">Learn More</button>
         </div>
         <div className="hero-image">
