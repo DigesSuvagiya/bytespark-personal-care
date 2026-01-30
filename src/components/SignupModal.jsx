@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import api from "../api/axios";
+
 
 export default function SignupModal({ isOpen, onClose , onLoginClick }) {
   const [name, setName] = useState('')
@@ -8,21 +10,44 @@ export default function SignupModal({ isOpen, onClose , onLoginClick }) {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [passwordMatch, setPasswordMatch] = useState(true)
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (password !== confirmPassword) {
-      setPasswordMatch(false)
-      return
-    }
-    setPasswordMatch(true)
-    console.log('Signup attempt:', { name, age, mobileNo, password })
-    // Reset form
-    setName('')
-    setAge('')
-    setMobileNo('')
-    setPassword('')
-    setConfirmPassword('')
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (password !== confirmPassword) {
+    setPasswordMatch(false);
+    return;
   }
+
+  setPasswordMatch(true);
+
+  try {
+    await api.post("/auth/signup", {
+      name,
+      age,
+      number: mobileNo, 
+      password,
+    });
+
+    alert("Signup successful. Please login.");
+
+  
+    setName('');
+    setAge('');
+    setMobileNo('');
+    setPassword('');
+    setConfirmPassword('');
+
+    
+    onClose();
+    onLoginClick();
+
+  } catch (error) {
+    alert(
+      error.response?.data?.message || "Signup failed. Try again."
+    );
+  }
+};
+
 
   const handleConfirmPasswordChange = (value) => {
     setConfirmPassword(value)

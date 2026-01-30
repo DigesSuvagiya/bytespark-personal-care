@@ -1,37 +1,25 @@
-import React, { useState } from 'react'
+
+import React, { useState, useEffect, useContext } from 'react'
 import Footer from '../components/Footer'
 import Navigation from '../components/Navigation'
+import ProductModal from '../components/ProductModal'
+import { CartContext } from '../context/CartContext'
+import api from "../api/axios";
 
 export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [sortBy, setSortBy] = useState('featured')
+  const [products, setProducts] = useState([])
 
-  const products = [
-    // Skincare
-    { id: 1, name: 'Gentle Facial Cleanser', description: 'pH-balanced cleanser for sensitive skin', price: 499, category: 'Skincare', icon: '🧼' },
-    { id: 2, name: 'Hydrating Moisturizer', description: 'Lightweight hydration for all skin types', price: 599, category: 'Skincare', icon: '✨' },
-    { id: 3, name: 'Vitamin C Serum', description: 'Brightening serum with natural vitamin C', price: 799, category: 'Skincare', icon: '💫' },
-    { id: 4, name: 'Night Repair Cream', description: 'Rich overnight nourishment formula', price: 649, category: 'Skincare', icon: '🌙' },
-    
-    // Hair Care
-    { id: 5, name: 'Hair Care Shampoo', description: 'Sulfate-free formula for healthy hair', price: 379, category: 'Hair Care', icon: '💆' },
-    { id: 6, name: 'Deep Conditioner', description: 'Intensive moisture treatment for dry hair', price: 449, category: 'Hair Care', icon: '🌿' },
-    { id: 7, name: 'Hair Serum', description: 'Smooth and shine-enhancing serum', price: 399, category: 'Hair Care', icon: '💎' },
-    { id: 8, name: 'Hair Oil', description: 'Nourishing oil for scalp and strands', price: 299, category: 'Hair Care', icon: '🫗' },
-    
-    // Body Care
-    { id: 9, name: 'Natural Body Lotion', description: 'Nourishing lotion with organic extracts', price: 449, category: 'Body Care', icon: '🧴' },
-    { id: 10, name: 'Body Wash', description: 'Gentle cleansing gel for all skin types', price: 349, category: 'Body Care', icon: '🛁' },
-    { id: 11, name: 'Body Scrub', description: 'Exfoliating scrub with natural ingredients', price: 399, category: 'Body Care', icon: '✨' },
-    { id: 12, name: 'Body Butter', description: 'Rich, luxurious body butter', price: 549, category: 'Body Care', icon: '🧈' },
-    
-    // Hygiene
-    { id: 13, name: 'Hand Sanitizer', description: 'Effective 70% alcohol hand sanitizer', price: 149, category: 'Hygiene', icon: '🧼' },
-    { id: 14, name: 'Antibacterial Soap', description: 'Safe antibacterial formula', price: 99, category: 'Hygiene', icon: '🧴' },
-    { id: 15, name: 'Wet Wipes', description: 'Gentle cleansing wipes for on-the-go', price: 199, category: 'Hygiene', icon: '📦' },
-    { id: 16, name: 'Disinfectant Spray', description: 'Surface disinfectant spray', price: 249, category: 'Hygiene', icon: '💨' },
-  ]
+useEffect(() => {
+  const getProducts = async () => {
+    const res = await api.get("/products");
+    setProducts(res.data);
+  };
 
+  getProducts();
+}, []);
+  
   
   const filteredProducts = selectedCategory === 'All'
     ? products
@@ -45,6 +33,21 @@ export default function Products() {
   })
 
   const categories = ['All', 'Skincare', 'Hair Care', 'Body Care', 'Hygiene']
+
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  const closeModal = () => setSelectedProduct(null)
+  const { addToCart } = useContext(CartContext)
+
+  const handleAddToCart = (product) => {
+    addToCart({
+      id: product._id || product.id,
+      name: product.name,
+      price: product.price,
+      category: product.category,
+      icon: product.icon || '📦',
+      description: product.description,
+    })
+  }
 
   return (
     <div className="app">
@@ -105,14 +108,24 @@ export default function Products() {
           {sortedProducts.length > 0 ? (
             <div className="products-grid">
               {sortedProducts.map(product => (
-                <div key={product.id} className="product-card">
+                <div
+                  key={product._id}
+                  className="product-card"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setSelectedProduct(product)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') setSelectedProduct(product)
+                  }}
+                  aria-label={`View details for ${product.name}`}
+                >
                   <div className="product-image">{product.icon}</div>
                   <div className="product-info">
                     <h3 className="product-name">{product.name}</h3>
                     <p className="product-description">{product.description}</p>
                     <p className="product-category">{product.category}</p>
                     <p className="product-price">₹{product.price}</p>
-                    <button className="add-to-cart-btn">Add to Cart</button>
+                      <button className="add-to-cart-btn" onClick={() => handleAddToCart(product)}>Add to Cart</button>
                   </div>
                 </div>
               ))}
@@ -126,7 +139,12 @@ export default function Products() {
           )}
         </div>
       </section>
-
+      <ProductModal
+        product={selectedProduct}
+        isOpen={!!selectedProduct}
+        onClose={closeModal}
+        onAddToCart={handleAddToCart}
+      />
       <Footer />
     </div>
   )

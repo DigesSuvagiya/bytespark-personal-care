@@ -1,14 +1,40 @@
 import React, { useState } from 'react'
+import api from "../api/axios";
 
-export default function LoginModal({ isOpen, onClose, onSignupClick }) {
+
+export default function LoginModal({ isOpen, onClose, onSignupClick, onLogin }) {
   const [mobileNo, setMobileNo] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log('Login attempt:', { mobileNo, password })
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+    try {
+      const res = await api.post("/auth/login", {
+        number: mobileNo,  
+        password,
+      });
+
+      alert("Login successful");
+
+      
+      try {
+        localStorage.setItem('bytesparkUser', JSON.stringify(res.data))
+      } catch (e) {
+        console.error('Failed to save user to localStorage', e)
+      }
+
     
+      onLogin?.(res.data)
+
+      onClose();
+
+  } catch (error) {
+    alert(
+      error.response?.data?.message || "Login failed. Try again."
+    );
   }
+};
 
   if (!isOpen) return null
 
