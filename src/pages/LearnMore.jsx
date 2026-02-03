@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { FiArrowLeft } from 'react-icons/fi'
 import Navigation from '../components/Navigation'
 import Footer from '../components/Footer'
 
@@ -11,6 +12,10 @@ export default function LearnMore() {
       {/* Hero Section */}
       <section className="learn-more-hero">
         <div className="section-container">
+          <Link to="/" className="back-button">
+            <FiArrowLeft size={24} />
+            Back to Home
+          </Link>
           <h1>About <span>Bytespark</span> Personal Care</h1>
           <p className="subtitle">Naturally Clean. Dermatologically Tested. Trusted by Families.</p>
         </div>

@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { CartContext } from '../context/CartContext'
+import ProductModal from './ProductModal'
 import api from '../api/axios'
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const { addToCart } = useContext(CartContext)
 
   useEffect(() => {
@@ -48,7 +51,22 @@ export default function FeaturedProducts() {
             </p>
           ) : products.length > 0 ? (
             products.map(product => (
-              <div key={product._id || product.id} className="product-card">
+              <div 
+                key={product._id || product.id} 
+                className="product-card"
+                onClick={() => {
+                  setSelectedProduct(product)
+                  setIsModalOpen(true)
+                }}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setSelectedProduct(product)
+                    setIsModalOpen(true)
+                  }
+                }}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="product-image">
                   {product.image ? (
                     <img
@@ -78,6 +96,15 @@ export default function FeaturedProducts() {
           )}
         </div>
       </div>
+      <ProductModal 
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false)
+          setSelectedProduct(null)
+        }}
+        onAddToCart={handleAddToCart}
+      />
     </section>
   )
 }

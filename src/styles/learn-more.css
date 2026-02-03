@@ -7,6 +7,29 @@
   background-attachment: fixed;
   padding: 5rem 2rem;
   text-align: center;
+  position: relative;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #2c9d78;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  position: absolute;
+  left: 2rem;
+  top: 6rem;
+}
+
+.back-button:hover {
+  color: #1b6f52;
+  transform: translateX(-4px);
 }
 
 .learn-more-hero h1 {
@@ -270,6 +293,13 @@
     font-size: 1rem;
   }
 
+  .back-button {
+    position: static;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+  }
+
   .story-content {
     grid-template-columns: 1fr;
   }
@@ -296,6 +326,16 @@
 @media (max-width: 480px) {
   .learn-more-hero h1 {
     font-size: 1.8rem;
+  }
+
+  .back-button {
+    position: static;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .values-grid,
