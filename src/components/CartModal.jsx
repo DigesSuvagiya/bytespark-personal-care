@@ -41,7 +41,21 @@ export default function CartModal({ isOpen, onClose, cartItems, removeFromCart, 
             <div className="cart-items-list">
               {cartItems.map((item) => (
                 <div key={item.id} className="cart-item">
-                  <div className="cart-item-icon">{item.icon}</div>
+                  <div className="cart-item-icon">
+                    {item.image ? (
+                      <img
+                        src={`/products/${item.image}`}
+                        alt={item.name}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div style={{ display: item.image ? 'none' : 'flex' }}>
+                      {item.icon || '📦'}
+                    </div>
+                  </div>
                   <div className="cart-item-details">
                     <h4 className="cart-item-name">{item.name}</h4>
                     <p className="cart-item-category">{item.category}</p>

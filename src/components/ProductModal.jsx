@@ -16,7 +16,20 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }) 
 
         <div className="product-modal-body">
           <div className="product-modal-image">
-            <div className="product-image-large">{product.icon}</div>
+                    {product.image ? (
+                      <img
+                        src={`/products/${product.image}`}
+                        alt={product.name}
+                        loading="lazy"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div style={{ display: product.image ? 'none' : 'flex' }}>
+                      {product.icon || '📦'}
+                    </div>
           </div>
           <div className="product-modal-info">
             <h2 id="product-modal-title">{product.name}</h2>

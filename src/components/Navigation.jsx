@@ -38,6 +38,7 @@ export default function Navigation() {
           </div>
           <ul className="navbar-menu">
             <li><Link to="/">Home</Link></li>
+            <li><Link to="/products">Products</Link></li>
             <li>
               <button
                 className="cart-link"

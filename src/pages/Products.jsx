@@ -13,26 +13,6 @@ export default function Products() {
   const [products, setProducts] = useState([])
   const [error, setError] = useState(null)
 
-  // Mock products as fallback
-  const mockProducts = [
-    { _id: 1, name: 'Gentle Facial Cleanser', description: 'pH-balanced cleanser for sensitive skin', price: 499, category: 'Skincare', icon: '🧼' },
-    { _id: 2, name: 'Hydrating Moisturizer', description: 'Lightweight hydration for all skin types', price: 599, category: 'Skincare', icon: '✨' },
-    { _id: 3, name: 'Vitamin C Serum', description: 'Brightening serum with natural vitamin C', price: 799, category: 'Skincare', icon: '💫' },
-    { _id: 4, name: 'Night Repair Cream', description: 'Rich overnight nourishment formula', price: 649, category: 'Skincare', icon: '🌙' },
-    { _id: 5, name: 'Hair Care Shampoo', description: 'Sulfate-free formula for healthy hair', price: 379, category: 'Hair Care', icon: '💆' },
-    { _id: 6, name: 'Deep Conditioner', description: 'Intensive moisture treatment for dry hair', price: 449, category: 'Hair Care', icon: '🌿' },
-    { _id: 7, name: 'Hair Serum', description: 'Smooth and shine-enhancing serum', price: 399, category: 'Hair Care', icon: '💎' },
-    { _id: 8, name: 'Hair Oil', description: 'Nourishing oil for scalp and strands', price: 299, category: 'Hair Care', icon: '🫗' },
-    { _id: 9, name: 'Natural Body Lotion', description: 'Nourishing lotion with organic extracts', price: 449, category: 'Body Care', icon: '🧴' },
-    { _id: 10, name: 'Body Wash', description: 'Gentle cleansing gel for all skin types', price: 349, category: 'Body Care', icon: '🛁' },
-    { _id: 11, name: 'Body Scrub', description: 'Exfoliating scrub with natural ingredients', price: 399, category: 'Body Care', icon: '✨' },
-    { _id: 12, name: 'Body Butter', description: 'Rich, luxurious body butter', price: 549, category: 'Body Care', icon: '🧈' },
-    { _id: 13, name: 'Hand Sanitizer', description: 'Effective 70% alcohol hand sanitizer', price: 149, category: 'Hygiene', icon: '🧼' },
-    { _id: 14, name: 'Antibacterial Soap', description: 'Safe antibacterial formula', price: 99, category: 'Hygiene', icon: '🧴' },
-    { _id: 15, name: 'Wet Wipes', description: 'Gentle cleansing wipes for on-the-go', price: 199, category: 'Hygiene', icon: '📦' },
-    { _id: 16, name: 'Disinfectant Spray', description: 'Surface disinfectant spray', price: 249, category: 'Hygiene', icon: '💨' },
-  ]
-
   useEffect(() => {
     const getProducts = async () => {
       try {
@@ -40,15 +20,10 @@ export default function Products() {
         if (res.data && res.data.length > 0) {
           setProducts(res.data);
           setError(null);
-        } else {
-          // Use mock products if API returns empty
-          setProducts(mockProducts);
-        }
+        } 
       } catch (err) {
         console.error('Failed to fetch products:', err);
-        // Use mock products as fallback
-        setProducts(mockProducts);
-        setError('Using demo products');
+        setError('not able to fetch');
       }
     };
 
@@ -58,7 +33,7 @@ export default function Products() {
   
   const filteredProducts = selectedCategory === 'All'
     ? products
-    : products.filter(p => p.category === selectedCategory)
+    : products.filter(p => p.category && p.category.toLowerCase() === selectedCategory.toLowerCase())
 
   
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -67,7 +42,7 @@ export default function Products() {
     return 0 
   })
 
-  const categories = ['All', 'Skincare', 'Hair Care', 'Body Care', 'Hygiene']
+  const categories = ['All', 'Skincare', 'Hair', 'Body Care', 'Hygiene' , 'Facemask']
 
   const [selectedProduct, setSelectedProduct] = useState(null)
   const closeModal = () => setSelectedProduct(null)
@@ -79,7 +54,7 @@ export default function Products() {
       name: product.name,
       price: product.price,
       category: product.category,
-      icon: product.icon || '📦',
+      image: product.image || '📦',
       description: product.description,
     })
   }
@@ -87,8 +62,6 @@ export default function Products() {
   return (
     <div className="app">
       <Navigation />
-      
-    
       <section className="products-header">
         <div className="section-container">
           <div className="breadcrumb">
@@ -154,13 +127,36 @@ export default function Products() {
                   }}
                   aria-label={`View details for ${product.name}`}
                 >
-                  <div className="product-image">{product.icon}</div>
+                  <div className="product-image">
+                    {product.image ? (
+                      <img
+                        src={`/products/${product.image}`}
+                        alt={product.name}
+                        loading="lazy"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div style={{ display: product.image ? 'none' : 'flex' }}>
+                      {product.icon || '📦'}
+                    </div>
+                  </div>
                   <div className="product-info">
                     <h3 className="product-name">{product.name}</h3>
                     <p className="product-description">{product.description}</p>
                     <p className="product-category">{product.category}</p>
                     <p className="product-price">₹{product.price}</p>
-                      <button className="add-to-cart-btn" onClick={() => handleAddToCart(product)}>Add to Cart</button>
+                      <button
+        className="add-to-cart-btn"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleAddToCart(product);
+        }}
+      >
+        Add to Cart
+      </button>
                   </div>
                 </div>
               ))}
@@ -175,7 +171,6 @@ export default function Products() {
         </div>
       </section>
 
-      <ProductModal product={selectedProduct} isOpen={!!selectedProduct} onClose={closeModal} />
       <ProductModal
         product={selectedProduct}
         isOpen={!!selectedProduct}
