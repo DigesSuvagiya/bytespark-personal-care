@@ -1,36 +1,38 @@
-import React from 'react'
+import React, { useState, useEffect, useContext } from 'react'
+import { CartContext } from '../context/CartContext'
+import api from '../api/axios'
 
 export default function FeaturedProducts() {
-  const products = [
-    {
-      id: 1,
-      name: 'Gentle Facial Cleanser',
-      description: 'pH-balanced cleanser for sensitive skin',
-      price: '₹499',
-      icon: '🧼'
-    },
-    {
-      id: 2,
-      name: 'Hydrating Moisturizer',
-      description: 'Lightweight hydration for all skin types',
-      price: '₹599',
-      icon: '✨'
-    },
-    {
-      id: 3,
-      name: 'Natural Body Lotion',
-      description: 'Nourishing lotion with organic extracts',
-      price: '₹449',
-      icon: '🌿'
-    },
-    {
-      id: 4,
-      name: 'Hair Care Shampoo',
-      description: 'Sulfate-free formula for healthy hair',
-      price: '₹379',
-      icon: '💆'
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const { addToCart } = useContext(CartContext)
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await api.get('/products')
+        setProducts(res.data.slice(0, 4))
+      } catch (err) {
+        console.error('Failed to fetch featured products:', err)
+        setProducts([])
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+
+    fetchProducts()
+  }, [])
+
+  const handleAddToCart = (product) => {
+    addToCart({
+      id: product._id || product.id,
+      name: product.name,
+      price: product.price,
+      category: product.category,
+      image: product.image || '📦',
+      description: product.description,
+    })
+  }
 
   return (
     <section className="featured-products" id="products">
@@ -40,17 +42,40 @@ export default function FeaturedProducts() {
           <p>Our most-loved personal care essentials</p>
         </div>
         <div className="products-grid">
-          {products.map(product => (
-            <div key={product.id} className="product-card">
-              <div className="product-image">{product.icon}</div>
-              <div className="product-info">
-                <h3 className="product-name">{product.name}</h3>
-                <p className="product-description">{product.description}</p>
-                <p className="product-price">{product.price}</p>
-                <button>Add to Cart</button>
+          {loading ? (
+            <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#999' }}>
+              Loading featured products...
+            </p>
+          ) : products.length > 0 ? (
+            products.map(product => (
+              <div key={product._id || product.id} className="product-card">
+                <div className="product-image">
+                  {product.image ? (
+                    <img
+                      src={`/products/${product.image}`}
+                      alt={product.name}
+                      loading="lazy"
+                    />
+                  ) : null}
+                  <div style={{ display: product.image ? 'none' : 'flex' }}>
+                    {product.icon || '📦'}
+                  </div>
+                </div>
+                <div className="product-info">
+                  <h3 className="product-name">{product.name}</h3>
+                  <p className="product-description">{product.description}</p>
+                  <p className="product-price">₹{product.price}</p>
+                  <button className="add-to-cart-btn" onClick={() => handleAddToCart(product)}>
+                    Add to Cart
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#999' }}>
+              No products available
+            </p>
+          )}
         </div>
       </div>
     </section>
