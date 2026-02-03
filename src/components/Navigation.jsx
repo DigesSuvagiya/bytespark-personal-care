@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { FiShoppingCart, FiUser, FiLogOut } from 'react-icons/fi'
 import LoginModal from './LoginModal'
 import SignupModal from './SignupModal'
 import CartModal from './CartModal'
@@ -44,15 +45,21 @@ export default function Navigation() {
                 className="cart-link"
                 onClick={() => setIsCartOpen(true)}
                 aria-label={`Cart with ${cartItemCount} items`}
+                title="Shopping Cart"
               >
-                🛒 Cart {cartItemCount > 0 && <span className="cart-badge">{cartItemCount}</span>}
+                <FiShoppingCart size={28} />
+                {cartItemCount > 0 && <span className="cart-badge">{cartItemCount}</span>}
               </button>
             </li>
             <li>
               {user ? (
-                <button className="login-link" onClick={handleLogout}>Logout</button>
+                <button className="login-link" onClick={handleLogout} title="Logout">
+                  <FiLogOut size={28} />
+                </button>
               ) : (
-                <button className="login-link" onClick={() => setIsLoginOpen(true)}>👤 Login</button>
+                <button className="login-link" onClick={() => setIsLoginOpen(true)} title="Login">
+                  <FiUser size={28} />
+                </button>
               )}
             </li>
           </ul>

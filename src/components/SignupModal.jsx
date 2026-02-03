@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { FiX } from 'react-icons/fi'
 import api from "../api/axios";
 
 
@@ -63,7 +64,9 @@ export default function SignupModal({ isOpen, onClose , onLoginClick }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content signup-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>✕</button>
+        <button className="modal-close" onClick={onClose} aria-label="Close signup modal">
+          <FiX size={24} />
+        </button>
         
         <div className="modal-header">
           <h2>Create Account</h2>

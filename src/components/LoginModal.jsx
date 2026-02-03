@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { FiX } from 'react-icons/fi'
 import api from "../api/axios";
 
 
@@ -42,7 +43,9 @@ export default function LoginModal({ isOpen, onClose, onSignupClick, onLogin }) 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>✕</button>
+        <button className="modal-close" onClick={onClose} aria-label="Close login modal">
+          <FiX size={24} />
+        </button>
         
         <div className="modal-header">
           <h2>Welcome Back</h2>

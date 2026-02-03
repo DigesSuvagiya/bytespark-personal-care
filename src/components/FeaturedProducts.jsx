@@ -58,7 +58,7 @@ export default function FeaturedProducts() {
                     />
                   ) : null}
                   <div style={{ display: product.image ? 'none' : 'flex' }}>
-                    {product.icon || '📦'}
+                    {product.icon || "something went wrong"}
                   </div>
                 </div>
                 <div className="product-info">

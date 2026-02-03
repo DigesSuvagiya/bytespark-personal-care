@@ -4,25 +4,21 @@ export default function TrustSection() {
   const trustPoints = [
     {
       id: 1,
-      icon: '✓',
       title: 'Dermatologically Tested',
       description: 'Clinically proven formulations suitable for all skin types'
     },
     {
       id: 2,
-      icon: '🌿',
       title: 'Safe Ingredients',
       description: 'Natural and scientifically validated components'
     },
     {
       id: 3,
-      icon: '⚡',
       title: 'No Harsh Chemicals',
       description: 'Free from parabens, sulfates, and harmful additives'
     },
     {
       id: 4,
-      icon: '🏆',
       title: 'Quality Assured',
       description: 'Rigorous testing and quality standards maintained'
     }
@@ -33,7 +29,6 @@ export default function TrustSection() {
       <div className="trust-container">
         {trustPoints.map(point => (
           <div key={point.id} className="trust-item">
-            <div className="trust-icon">{point.icon}</div>
             <div className="trust-content">
               <h3>{point.title}</h3>
               <p>{point.description}</p>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { FiX, FiTrash2 } from 'react-icons/fi'
 
 export default function CartModal({ isOpen, onClose, cartItems, removeFromCart, user }) {
   if (!isOpen) return null
@@ -24,15 +25,16 @@ export default function CartModal({ isOpen, onClose, cartItems, removeFromCart, 
         aria-labelledby="cart-modal-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="modal-close" onClick={onClose} aria-label="Close cart">×</button>
+        <button className="modal-close" onClick={onClose} aria-label="Close cart">
+          <FiX size={24} />
+        </button>
 
         <div className="cart-modal-header">
-          <h2 id="cart-modal-title">🛒 Shopping Cart</h2>
+          <h2 id="cart-modal-title">Shopping Cart</h2>
         </div>
 
         {cartItems.length === 0 ? (
           <div className="empty-cart">
-            <p className="empty-cart-icon">📭</p>
             <p className="empty-cart-text">Your cart is empty</p>
             <p className="empty-cart-hint">Start shopping to add items to your cart!</p>
           </div>
@@ -53,7 +55,7 @@ export default function CartModal({ isOpen, onClose, cartItems, removeFromCart, 
                       />
                     ) : null}
                     <div style={{ display: item.image ? 'none' : 'flex' }}>
-                      {item.icon || '📦'}
+                      📦
                     </div>
                   </div>
                   <div className="cart-item-details">
@@ -71,8 +73,9 @@ export default function CartModal({ isOpen, onClose, cartItems, removeFromCart, 
                     className="cart-remove-btn"
                     onClick={() => removeFromCart(item.id)}
                     aria-label={`Remove ${item.name} from cart`}
+                    title="Remove item"
                   >
-                    ✕
+                    <FiTrash2 size={20} />
                   </button>
                 </div>
               ))}

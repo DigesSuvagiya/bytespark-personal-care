@@ -1,4 +1,5 @@
 import React from 'react'
+import { FiX } from 'react-icons/fi'
 
 export default function ProductModal({ product, isOpen, onClose, onAddToCart }) {
   if (!isOpen || !product) return null
@@ -12,7 +13,9 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }) 
         aria-labelledby="product-modal-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="modal-close" onClick={onClose} aria-label="Close product details">×</button>
+        <button className="modal-close" onClick={onClose} aria-label="Close product details">
+          <FiX size={24} />
+        </button>
 
         <div className="product-modal-body">
           <div className="product-modal-image">

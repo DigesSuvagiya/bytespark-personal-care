@@ -12,10 +12,18 @@ export default function About() {
         </p>
         <div className="hero-cta">
           <Link to="/products" className="cta-button">Our Products</Link>
-          <button className="secondary">Learn More</button>
+          <Link to="/learn-more" className="secondary">Learn More</Link>
         </div>
-        <div className="hero-image">
-          🧴
+        <div className="hero-images-container">
+          <div className="hero-image-single">
+            <img src="/products/home_image.jpg" alt="Product showcase" loading="lazy" />
+          </div>
+          <div className="hero-image-single">
+            <img src="/products/home2.jpg" alt="Skincare products" loading="lazy" />
+          </div>
+          <div className="hero-image-single">
+            <img src="/products/home3.jpg" alt="Natural care" loading="lazy" />
+          </div>
         </div>
       </div>
     </section>
