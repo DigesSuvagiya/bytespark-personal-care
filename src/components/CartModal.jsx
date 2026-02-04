@@ -1,18 +1,29 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FiX, FiTrash2 } from 'react-icons/fi'
+import CheckoutModal from './CheckoutModal'
 
-export default function CartModal({ isOpen, onClose, cartItems, removeFromCart, user }) {
+export default function CartModal({ isOpen, onClose, cartItems, removeFromCart, user, clearCart }) {
   if (!isOpen) return null
 
   // Calculate total price
   const totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
   const handleCheckout = () => {
     if (!user) {
       alert('Please login first to proceed with checkout')
       return
     }
+    setIsCheckoutOpen(true)
+  }
 
+  const handleOrderSuccess = (order) => {
+    // Clear cart and notify user
+    clearCart?.()
+    alert(`Order placed successfully. Order id: ${order.id}`)
+    setIsCheckoutOpen(false)
+    onClose()
   }
 
   return (
@@ -104,6 +115,16 @@ export default function CartModal({ isOpen, onClose, cartItems, removeFromCart, 
               </button>
             </div>
           </>
+        )}
+        {isCheckoutOpen && (
+          <CheckoutModal
+            isOpen={isCheckoutOpen}
+            onClose={() => setIsCheckoutOpen(false)}
+            cartItems={cartItems}
+            totalPrice={totalPrice}
+            user={user}
+            onSuccess={handleOrderSuccess}
+          />
         )}
       </div>
     </div>

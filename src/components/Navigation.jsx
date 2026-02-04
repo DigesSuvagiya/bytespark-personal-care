@@ -10,7 +10,7 @@ export default function Navigation() {
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isSignupOpen, setIsSignupOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
-  const { cartItems, removeFromCart } = useContext(CartContext)
+  const { cartItems, removeFromCart, clearCart } = useContext(CartContext)
 
   const [user, setUser] = useState(null)
 
@@ -73,7 +73,7 @@ export default function Navigation() {
         setIsLoginOpen(true)
         setIsSignupOpen(false)
       }} />
-      <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} cartItems={cartItems} removeFromCart={removeFromCart} user={user} />
+      <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} cartItems={cartItems} removeFromCart={removeFromCart} clearCart={clearCart} user={user} />
     </> 
   )
 }
