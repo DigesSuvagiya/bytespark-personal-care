@@ -48,7 +48,6 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }) 
                   onClose()
                 }}
               >Add to Cart</button>
-              <button className="modal-secondary" onClick={onClose}>Close</button>
             </div>
           </div>
         </div>
