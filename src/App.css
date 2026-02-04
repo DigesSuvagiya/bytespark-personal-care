@@ -59,31 +59,7 @@
 }
 
 .navbar-menu a.login-link:hover {
-  background-color: #5C4635;
-  color: #ffffff;
-}
-
-.navbar-menu .login-link {
-  background-color: #7F6044;
-  color: #ffffff;
-  width: 3.2rem;
-  height: 3rem;
-  padding: 0;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(44, 157, 120, 0.3);
-}
-
-.navbar-menu .login-link:hover {
-  background-color: #5C4635;
-  box-shadow: 0 4px 12px rgba(44, 157, 120, 0.4);
-  transform: scale(1.05);
+  color: #7F6044;
 }
 
 /* ==================== LOGIN MODAL ==================== */
@@ -1041,10 +1017,51 @@
   border-color: #7F6044;
 }
 
+.search-section {
+  flex: 0 1 300px;
+  min-width: 250px;
+  margin-top: 1.5rem;
+}
+
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: #7F6044;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 2px solid #BCA087;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  transition: all 0.3s ease;
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #7F6044;
+  box-shadow: 0 0 0 3px rgba(127, 96, 68, 0.1);
+}
+
 .sort-section {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  margin-top: 1.5rem;
 }
 
 .sort-section label {
@@ -1294,29 +1311,31 @@
   }
 }
 
-/* ==================== CART LINK & BADGE ==================== */
-.cart-link {
-  background-color: #7F6044;
-  color: #ffffff;
-  width: 3rem;
-  height: 3rem;
-  padding: 0;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+/* ==================== ICON BUTTONS (CART & LOGIN) ==================== */
+.icon-button {
+  background: none;
   border: none;
+  color: #7F6044;
   cursor: pointer;
-  font-weight: 500;
-  position: relative;
+  padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(44, 157, 120, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
 }
 
-.cart-link:hover {
-  background-color: #5C4635;
-  box-shadow: 0 4px 12px rgba(44, 157, 120, 0.4);
-  transform: scale(1.05);
+.icon-button:hover {
+  color: #5C4635;
+  transform: scale(1.1);
+}
+
+.cart-icon {
+  margin-right: 0.5rem;
+}
+
+.login-icon {
+  margin-left: 0.5rem;
 }
 
 .cart-badge {

@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
+import { FiSearch } from 'react-icons/fi'
 import Footer from '../components/Footer'
 import Navigation from '../components/Navigation'
 import ProductModal from '../components/ProductModal'
@@ -10,6 +11,7 @@ import api from "../api/axios";
 export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [sortBy, setSortBy] = useState('featured')
+  const [searchQuery, setSearchQuery] = useState('')
   const [products, setProducts] = useState([])
   const [error, setError] = useState(null)
 
@@ -31,9 +33,18 @@ export default function Products() {
   }, []);
   
   
-  const filteredProducts = selectedCategory === 'All'
-    ? products
-    : products.filter(p => p.category && p.category.toLowerCase() === selectedCategory.toLowerCase())
+  const filteredProducts = products.filter(p => {
+    const matchesCategory = selectedCategory === 'All' 
+      ? true 
+      : p.category && p.category.toLowerCase() === selectedCategory.toLowerCase()
+    
+    const matchesSearch = searchQuery === ''
+      ? true
+      : p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.description.toLowerCase().includes(searchQuery.toLowerCase())
+    
+    return matchesCategory && matchesSearch
+  })
 
   
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -89,6 +100,19 @@ export default function Products() {
                     {cat}
                   </button>
                 ))}
+              </div>
+            </div>
+
+            <div className="search-section">
+              <div className="search-wrapper">
+                <FiSearch className="search-icon" size={20} />
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="search-input"
+                />
               </div>
             </div>
 

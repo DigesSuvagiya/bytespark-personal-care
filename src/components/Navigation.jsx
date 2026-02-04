@@ -42,7 +42,7 @@ export default function Navigation() {
             <li><Link to="/products">Products</Link></li>
             <li>
               <button
-                className="cart-link"
+                className="icon-button cart-icon"
                 onClick={() => setIsCartOpen(true)}
                 aria-label={`Cart with ${cartItemCount} items`}
                 title="Shopping Cart"
@@ -53,11 +53,11 @@ export default function Navigation() {
             </li>
             <li>
               {user ? (
-                <button className="login-link" onClick={handleLogout} title="Logout">
+                <button className="icon-button login-icon" onClick={handleLogout} title="Logout">
                   <FiLogOut size={28} />
                 </button>
               ) : (
-                <button className="login-link" onClick={() => setIsLoginOpen(true)} title="Login">
+                <button className="icon-button login-icon" onClick={() => setIsLoginOpen(true)} title="Login">
                   <FiUser size={28} />
                 </button>
               )}
