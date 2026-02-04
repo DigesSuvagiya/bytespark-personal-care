@@ -59,7 +59,7 @@ p {
 }
 
 a {
-  color: #2c9d78;
+  color: #7F6044;
   text-decoration: none;
   transition: color 0.3s ease;
 }
@@ -75,7 +75,7 @@ button {
   font-size: 1em;
   font-weight: 600;
   font-family: inherit;
-  background-color: #2c9d78;
+  background-color: #7F6044;
   color: #ffffff;
   cursor: pointer;
   transition: all 0.3s ease;

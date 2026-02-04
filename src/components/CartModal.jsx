@@ -12,8 +12,7 @@ export default function CartModal({ isOpen, onClose, cartItems, removeFromCart, 
       alert('Please login first to proceed with checkout')
       return
     }
-    alert(`Proceeding to checkout with ${cartItems.length} item(s). Total: ₹${totalPrice}`)
-    // TODO: Integrate with payment gateway
+
   }
 
   return (
