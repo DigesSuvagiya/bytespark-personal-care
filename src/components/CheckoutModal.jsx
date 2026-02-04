@@ -71,56 +71,58 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, totalPrice, 
           <FiX size={20} />
         </button>
 
-        <div className="checkout-header">
-          <div>
-            <h2>Secure Checkout</h2>
-            <p className="checkout-sub">Complete your order — fast, simple and secure</p>
-          </div>
-          <div className="checkout-total">Total: <strong>₹{totalPrice}</strong></div>
+        <div className="modal-header">
+          <h2>Secure Checkout</h2>
+          <p>Complete your order — fast, simple and secure</p>
         </div>
 
-        <form className="checkout-form" onSubmit={handleSubmit} noValidate>
-          <div className="form-row">
+        <form className="signup-form checkout-form" onSubmit={handleSubmit} noValidate>
+          <div className="form-group">
             <label>Full Name</label>
-            <input className="input-field" name="fullName" value={form.fullName} onChange={handleChange} />
+            <input type="text" className="" name="fullName" value={form.fullName} onChange={handleChange} />
             {errors.fullName && <small className="field-error">{errors.fullName}</small>}
           </div>
-          <div className="form-row">
+
+          <div className="form-group">
             <label>Email</label>
-            <input className="input-field" name="email" value={form.email} onChange={handleChange} />
+            <input type="email" name="email" value={form.email} onChange={handleChange} />
             {errors.email && <small className="field-error">{errors.email}</small>}
           </div>
-          <div className="form-row">
+
+          <div className="form-group">
             <label>Phone</label>
-            <input className="input-field" name="phone" value={form.phone} onChange={handleChange} />
+            <input type="tel" name="phone" value={form.phone} onChange={handleChange} />
             {errors.phone && <small className="field-error">{errors.phone}</small>}
           </div>
-          <div className="form-row">
+
+          <div className="form-group">
             <label>Address</label>
-            <input className="input-field" name="address" value={form.address} onChange={handleChange} />
+            <input type="text" name="address" value={form.address} onChange={handleChange} />
             {errors.address && <small className="field-error">{errors.address}</small>}
           </div>
-          <div className="form-row split">
-            <div>
+
+          <div className="form-row">
+            <div className="form-group">
               <label>City</label>
-              <input className="input-field" name="city" value={form.city} onChange={handleChange} />
+              <input type="text" name="city" value={form.city} onChange={handleChange} />
               {errors.city && <small className="field-error">{errors.city}</small>}
             </div>
-            <div>
+            <div className="form-group">
               <label>State</label>
-              <input className="input-field" name="state" value={form.state} onChange={handleChange} />
+              <input type="text" name="state" value={form.state} onChange={handleChange} />
               {errors.state && <small className="field-error">{errors.state}</small>}
             </div>
           </div>
-          <div className="form-row">
+
+          <div className="form-group">
             <label>ZIP / Postal Code</label>
-            <input className="input-field" name="zip" value={form.zip} onChange={handleChange} />
+            <input type="text" name="zip" value={form.zip} onChange={handleChange} />
             {errors.zip && <small className="field-error">{errors.zip}</small>}
           </div>
 
-          <div className="form-row">
+          <div className="form-group">
             <label>Payment Method</label>
-            <select className="input-field" name="paymentMethod" value={form.paymentMethod} onChange={handleChange}>
+            <select name="paymentMethod" value={form.paymentMethod} onChange={handleChange}>
               <option value="cod">Cash on Delivery</option>
               <option value="card">Card (mock)</option>
             </select>
@@ -131,9 +133,9 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, totalPrice, 
             <div className="summary-amount">₹{totalPrice}</div>
           </div>
 
-          <div className="checkout-actions">
-            <button type="submit" className="checkout-confirm-btn" disabled={loading}>{loading ? 'Placing order...' : 'Place Order'}</button>
-            <button type="button" className="checkout-cancel-btn" onClick={onClose} disabled={loading}>Cancel</button>
+          <div className="modal-footer">
+            <button type="submit" className="signup-btn" disabled={loading}>{loading ? 'Placing order...' : 'Place Order'}</button>
+            <button type="button" className="signup-link-btn" onClick={onClose} disabled={loading}>Cancel</button>
           </div>
         </form>
       </div>
