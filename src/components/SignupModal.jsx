@@ -14,14 +14,14 @@ export default function SignupModal({ isOpen, onClose , onLoginClick }) {
   const handleSubmit = async (e) => {
   e.preventDefault();
 
-  const mobileRegex = /^[6-9]\d{9}$/
+  const mobileRegex = /^[6-9]\d{9}$/;
   if (!mobileRegex.test(mobileNo)) {
     alert("Please enter a valid 10-digit mobile number starting with 6-9.")
     return;
 
   }
 
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
   if (!passwordRegex.test(password)) {
     alert("Password must be at least 8 characters long and contain both letters and numbers.")
     return;
