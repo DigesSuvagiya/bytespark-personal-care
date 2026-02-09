@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useContext } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { FiSearch } from 'react-icons/fi'
 import Footer from '../components/Footer'
 import Navigation from '../components/Navigation'
@@ -9,11 +9,15 @@ import { CartContext } from '../context/CartContext'
 import api from "../api/axios";
 
 export default function Products() {
-  const [selectedCategory, setSelectedCategory] = useState('All')
+
+  const location = useLocation();
+
+  const [selectedCategory, setSelectedCategory] = useState(location.state?.selectedCategory || 'All')
   const [sortBy, setSortBy] = useState('featured')
   const [searchQuery, setSearchQuery] = useState('')
   const [products, setProducts] = useState([])
   const [error, setError] = useState(null)
+
 
   useEffect(() => {
     const getProducts = async () => {

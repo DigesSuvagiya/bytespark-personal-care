@@ -1,6 +1,16 @@
 import React from 'react'
+import { useNavigate } from "react-router-dom";
 
 export default function Categories() {
+
+const navigate = useNavigate();
+
+  const handleCategoryClick = (category) => {
+    navigate("/products", {
+      state: { selectedCategory: category }
+    });
+  };
+
   const categories = [
     {
       id: 1,
@@ -8,7 +18,7 @@ export default function Categories() {
     },
     {
       id: 2,
-      name: 'Hair Care',
+      name: 'Hair',
     },
     {
       id: 3,
@@ -17,7 +27,9 @@ export default function Categories() {
     {
       id: 4,
       name: 'Hygiene',
-    }]
+    }
+
+  ]
   
 
   return (
@@ -29,7 +41,7 @@ export default function Categories() {
         </div>
         <div className="categories-grid">
           {categories.map(category => (
-            <div key={category.id} className="category-card">
+            <div key={category.id} className="category-card" onClick={() => handleCategoryClick(category.name)}>
               <h3 className="category-name">{category.name}</h3>
             </div>
           ))}
