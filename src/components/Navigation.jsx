@@ -35,11 +35,12 @@ export default function Navigation() {
       <nav className="navbar">
         <div className="navbar-container">
           <div className="navbar-brand">
-            Byte<span>spark</span> Personal Care
+          <Link to="/">Byte<span>spark</span> Personal Care</Link>
           </div>
           <ul className="navbar-menu">
             <li><Link to="/">Home</Link></li>
             <li><Link to="/products">Products</Link></li>
+            <li><Link to="/learn-more">About Us</Link></li>
             <li>
               <button
                 className="icon-button cart-icon"

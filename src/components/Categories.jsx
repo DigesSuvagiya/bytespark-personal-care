@@ -9,12 +9,10 @@ export default function Categories() {
     {
       id: 2,
       name: 'Hair Care',
-    
     },
     {
       id: 3,
       name: 'Body Care',
-  
     },
     {
       id: 4,
@@ -40,3 +38,4 @@ export default function Categories() {
     </section>
   )
 }
+

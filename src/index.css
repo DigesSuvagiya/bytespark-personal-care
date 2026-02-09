@@ -65,7 +65,7 @@ a {
 }
 
 a:hover {
-  color: #1b6f52;
+  color: #5C4635;
 }
 
 button {
@@ -82,7 +82,7 @@ button {
 }
 
 button:hover {
-  background-color: #1b6f52;
+  background-color: #c59774;
   transform: translateY(-2px);
 }
 

@@ -5,7 +5,6 @@ import CheckoutModal from './CheckoutModal'
 export default function CartModal({ isOpen, onClose, cartItems, removeFromCart, user, clearCart }) {
   if (!isOpen) return null
 
-  // Calculate total price
   const totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
 
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
@@ -19,7 +18,6 @@ export default function CartModal({ isOpen, onClose, cartItems, removeFromCart, 
   }
 
   const handleOrderSuccess = (order) => {
-    // Clear cart and notify user
     clearCart?.()
     alert(`Order placed successfully. Order id: ${order.id}`)
     setIsCheckoutOpen(false)
@@ -117,6 +115,7 @@ export default function CartModal({ isOpen, onClose, cartItems, removeFromCart, 
           </>
         )}
         {isCheckoutOpen && (
+
           <CheckoutModal
             isOpen={isCheckoutOpen}
             onClose={() => setIsCheckoutOpen(false)}
@@ -125,6 +124,7 @@ export default function CartModal({ isOpen, onClose, cartItems, removeFromCart, 
             user={user}
             onSuccess={handleOrderSuccess}
           />
+          
         )}
       </div>
     </div>

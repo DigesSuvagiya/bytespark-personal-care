@@ -45,7 +45,7 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, totalPrice, 
     e.preventDefault()
     if (!validate()) return
     setLoading(true)
-    // Simulate order submission
+    
     try {
       await new Promise(resolve => setTimeout(resolve, 900))
       const order = {
@@ -135,7 +135,6 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, totalPrice, 
 
           <div className="modal-footer">
             <button type="submit" className="signup-btn" disabled={loading}>{loading ? 'Placing order...' : 'Place Order'}</button>
-            <button type="button" className="signup-link-btn" onClick={onClose} disabled={loading}>Cancel</button>
           </div>
         </form>
       </div>
