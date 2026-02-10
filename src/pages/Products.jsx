@@ -65,7 +65,7 @@ export default function Products() {
 
   const [selectedProduct, setSelectedProduct] = useState(null)
   const closeModal = () => setSelectedProduct(null)
-  const { addToCart } = useContext(CartContext)
+  const { addToCart, cartItems, increaseQuantity, decreaseQuantity} = useContext(CartContext)
 
   const handleAddToCart = (product) => {
     addToCart({
@@ -180,15 +180,46 @@ export default function Products() {
                     <p className="product-description">{product.description}</p>
                     <p className="product-category">{product.category}</p>
                     <p className="product-price">₹{product.price}</p>
-                      <button
-        className="add-to-cart-btn"
-        onClick={(e) => {
-          e.stopPropagation();
-          handleAddToCart(product);
-        }}
-      >
-        Add to Cart
-      </button>
+                    {(() => {
+                       const cartItem = cartItems.find(item => item.id === (product._id || product.id))
+                    return cartItem ? (
+                   <div className="product-qty-controls">
+  <button
+    className="product-qty-btn"
+    onClick={(e) => {
+      e.stopPropagation()
+      decreaseQuantity(cartItem.id)
+    }}
+  >
+    −
+  </button>
+
+  <span className="product-qty-value">{cartItem.quantity}</span>
+
+  <button
+    className="product-qty-btn"
+    onClick={(e) => {
+      e.stopPropagation()
+      increaseQuantity(cartItem.id)
+    }}
+  >
+    +
+  </button>
+</div>
+
+           ) : (
+           <button
+          className="add-to-cart-btn"
+            onClick={(e) => {
+           e.stopPropagation()
+          handleAddToCart(product)
+             }}
+           >
+          Add to Cart
+           </button>
+             )
+           })()}
+
                   </div>
                 </div>
               ))}
