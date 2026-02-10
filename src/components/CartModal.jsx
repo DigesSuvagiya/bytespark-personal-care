@@ -1,13 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { FiX, FiTrash2 } from 'react-icons/fi'
 import CheckoutModal from './CheckoutModal'
+import { CartContext } from '../context/CartContext'
 
-export default function CartModal({ isOpen, onClose, cartItems, removeFromCart, user, clearCart }) {
+export default function CartModal({ isOpen, onClose, user }) {
   if (!isOpen) return null
 
-  const totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+  const {
+    cartItems,
+    removeFromCart,
+    increaseQuantity,
+    decreaseQuantity,
+  } = useContext(CartContext)
 
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+
+  const totalPrice = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  )
 
   const handleCheckout = () => {
     if (!user) {
@@ -17,114 +28,79 @@ export default function CartModal({ isOpen, onClose, cartItems, removeFromCart, 
     setIsCheckoutOpen(true)
   }
 
-  const handleOrderSuccess = (order) => {
-    clearCart?.()
-    alert(`Order placed successfully. Order id: ${order.id}`)
-    setIsCheckoutOpen(false)
-    onClose()
-  }
-
   return (
-    <div className="modal-overlay" onClick={onClose} role="presentation">
+    <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal-content cart-modal-content"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="cart-modal-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="modal-close" onClick={onClose} aria-label="Close cart">
+        <button className="modal-close" onClick={onClose}>
           <FiX size={24} />
         </button>
 
-        <div className="cart-modal-header">
-          <h2 id="cart-modal-title">Shopping Cart</h2>
-        </div>
+        <h2>Shopping Cart</h2>
 
         {cartItems.length === 0 ? (
-          <div className="empty-cart">
-            <p className="empty-cart-text">Your cart is empty</p>
-            <p className="empty-cart-hint">Start shopping to add items to your cart!</p>
-          </div>
+          <p>Your cart is empty</p>
         ) : (
           <>
             <div className="cart-items-list">
-              {cartItems.map((item) => (
+              {cartItems.map(item => (
                 <div key={item.id} className="cart-item">
                   <div className="cart-item-icon">
                     {item.image ? (
-                      <img
-                        src={`/products/${item.image}`}
-                        alt={item.name}
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.nextSibling.style.display = 'flex';
-                        }}
-                      />
-                    ) : null}
-                    <div style={{ display: item.image ? 'none' : 'flex' }}>
-                      📦
-                    </div>
+                      <img src={`/products/${item.image}`} alt={item.name} />
+                    ) : (
+                      <span>📦</span>
+                    )}
                   </div>
+
                   <div className="cart-item-details">
-                    <h4 className="cart-item-name">{item.name}</h4>
-                    <p className="cart-item-category">{item.category}</p>
-                    <p className="cart-item-price">₹{item.price}</p>
+                    <h4>{item.name}</h4>
+                    <p>{item.category}</p>
+
+                    <div className="cart-qty-controls">
+                      <button onClick={() => decreaseQuantity(item.id)}>−</button>
+                      <span>{item.quantity}</span>
+                      <button onClick={() => increaseQuantity(item.id)}>+</button>
+                    </div>
+
+                    <p>₹{item.price}</p>
                   </div>
-                  <div className="cart-item-quantity">
-                    <span className="qty-label">Qty: {item.quantity}</span>
-                  </div>
+
                   <div className="cart-item-total">
-                    <p className="item-total">₹{item.price * item.quantity}</p>
+                    ₹{item.price * item.quantity}
                   </div>
+
                   <button
                     className="cart-remove-btn"
                     onClick={() => removeFromCart(item.id)}
-                    aria-label={`Remove ${item.name} from cart`}
-                    title="Remove item"
                   >
-                    <FiTrash2 size={20} />
+                    <FiTrash2 size={18} />
                   </button>
                 </div>
               ))}
             </div>
 
             <div className="cart-summary">
-              <div className="summary-row">
-                <span>Subtotal:</span>
-                <span>₹{totalPrice}</span>
-              </div>
-              <div className="summary-row">
-                <span>Shipping:</span>
-                <span className="shipping-free">Free</span>
-              </div>
-              <div className="summary-row summary-total">
-                <span>Total:</span>
-                <span>₹{totalPrice}</span>
-              </div>
+              <p><strong>Total:</strong> ₹{totalPrice}</p>
             </div>
 
             <div className="cart-actions">
-              <button className="checkout-btn" onClick={handleCheckout}>
-                Proceed to Checkout
-              </button>
-              <button className="continue-shopping-btn" onClick={onClose}>
-                Continue Shopping
-              </button>
+              <button onClick={handleCheckout}>Proceed to Checkout</button>
+              <button onClick={onClose}>Continue Shopping</button>
             </div>
           </>
         )}
-        {isCheckoutOpen && (
 
+        {isCheckoutOpen && (
           <CheckoutModal
             isOpen={isCheckoutOpen}
             onClose={() => setIsCheckoutOpen(false)}
             cartItems={cartItems}
             totalPrice={totalPrice}
             user={user}
-            onSuccess={handleOrderSuccess}
           />
-          
         )}
       </div>
     </div>

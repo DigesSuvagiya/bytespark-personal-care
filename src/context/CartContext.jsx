@@ -3,19 +3,12 @@ import React, { createContext, useState, useEffect } from 'react'
 export const CartContext = createContext()
 
 export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState([])
-
   
-  useEffect(() => {
-    const savedCart = localStorage.getItem('bytesparkCart')
-    if (savedCart) {
-      try {
-        setCartItems(JSON.parse(savedCart))
-      } catch (e) {
-        console.error('Failed to load cart:', e)
-      }
-    }
-  }, [])
+  const [cartItems, setCartItems] = useState(() => {
+  const savedCart = localStorage.getItem("bytesparkCart")
+  return savedCart ? JSON.parse(savedCart) : []
+})
+
 
  
   useEffect(() => {
@@ -36,6 +29,29 @@ export function CartProvider({ children }) {
     })
   }
 
+  const increaseQuantity = (productId) => {
+  setCartItems(prevItems =>
+    prevItems.map(item =>
+      item.id === productId
+        ? { ...item, quantity: item.quantity + 1 }
+        : item
+    )
+  )
+}
+
+const decreaseQuantity = (productId) => {
+  setCartItems(prevItems =>
+    prevItems
+      .map(item =>
+        item.id === productId
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      )
+      .filter(item => item.quantity > 0)
+  )
+}
+
+
   const removeFromCart = (productId) => {
     setCartItems(prevItems => prevItems.filter(item => item.id !== productId))
   }
@@ -49,6 +65,8 @@ export function CartProvider({ children }) {
     addToCart,
     removeFromCart,
     clearCart,
+    increaseQuantity,
+    decreaseQuantity,
   }
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
