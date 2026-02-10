@@ -1735,6 +1735,55 @@
   color: #7F6044;
 }
 
+.cart-qty-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.cart-qty-btn {
+  width: 34px;
+  height: 34px;
+
+  border-radius: 50%;
+  border: 1px solid #BCA087;
+  background-color: #ffffff;
+  color: #7F6044;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  
+  padding: 0;
+  line-height: 1;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+
+
+.cart-qty-btn:hover {
+  background-color: #7F6044;
+  color: #ffffff;
+  border-color: #7F6044;
+}
+
+
+.cart-qty-value {
+  min-width: 22px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+
 /* ==================== CART MODAL RESPONSIVE ==================== */
 @media (max-width: 768px) {
   .cart-modal-content {

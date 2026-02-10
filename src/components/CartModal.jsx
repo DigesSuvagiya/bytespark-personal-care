@@ -60,10 +60,23 @@ export default function CartModal({ isOpen, onClose, user }) {
                     <p>{item.category}</p>
 
                     <div className="cart-qty-controls">
-                      <button onClick={() => decreaseQuantity(item.id)}>−</button>
-                      <span>{item.quantity}</span>
-                      <button onClick={() => increaseQuantity(item.id)}>+</button>
-                    </div>
+                      <button
+                       className="cart-qty-btn"
+                       onClick={() => decreaseQuantity(item.id)}
+                      >
+                      −
+                   </button>
+
+                   <span className="cart-qty-value">{item.quantity}</span>
+
+                  <button
+                  className="cart-qty-btn"
+                 onClick={() => increaseQuantity(item.id)}
+                  >
+                   +
+                 </button>
+                  </div>
+
 
                     <p>₹{item.price}</p>
                   </div>
