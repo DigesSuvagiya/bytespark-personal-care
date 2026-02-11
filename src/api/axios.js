@@ -9,7 +9,6 @@ const api = axios.create({
 
 export default api;
 
-
 // import axios from "axios";
 
 // const api = axios.create({
