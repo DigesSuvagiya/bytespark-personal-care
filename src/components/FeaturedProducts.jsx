@@ -140,6 +140,9 @@ export default function FeaturedProducts() {
           setSelectedProduct(null)
         }}
         onAddToCart={handleAddToCart}
+        cartItems={cartItems}
+        increaseQuantity={increaseQuantity}
+        decreaseQuantity={decreaseQuantity}
       />
     </section>
   )
