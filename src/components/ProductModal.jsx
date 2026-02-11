@@ -1,7 +1,7 @@
 import React from 'react'
 import { FiX } from 'react-icons/fi'
 
-export default function ProductModal({ product, isOpen, onClose, onAddToCart }) {
+export default function ProductModal({ product, isOpen, onClose, onAddToCart, cartItems, increaseQuantity, decreaseQuantity }) {
   if (!isOpen || !product) return null
 
   return (
@@ -41,13 +41,45 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart }) 
             <p className="product-modal-price">₹{product.price}</p>
 
             <div className="product-modal-actions">
-              <button
-                className="add-to-cart-btn"
-                onClick={() => {
-                  onAddToCart?.(product)
-                  onClose()
-                }}
-              >Add to Cart</button>
+              {(() => {
+                       const cartItem = cartItems.find(item => item.id === (product._id || product.id))
+                    return cartItem ? (
+                   <div className="product-qty-controls">
+  <button
+    className="product-qty-btn"
+    onClick={(e) => {
+      e.stopPropagation()
+      decreaseQuantity(cartItem.id)
+    }}
+  >
+    −
+  </button>
+
+  <span className="product-qty-value">{cartItem.quantity}</span>
+
+  <button
+    className="product-qty-btn"
+    onClick={(e) => {
+      e.stopPropagation()
+      increaseQuantity(cartItem.id)
+    }}
+  >
+    +
+  </button>
+</div>
+
+           ) : (
+           <button
+          className="add-to-cart-btn"
+            onClick={(e) => {
+           e.stopPropagation()
+          onAddToCart(product)
+             }}
+           >
+          Add to Cart
+           </button>
+             )
+           })()}
             </div>
           </div>
         </div>

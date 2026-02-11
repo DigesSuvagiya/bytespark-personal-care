@@ -8,7 +8,7 @@ export default function FeaturedProducts() {
   const [loading, setLoading] = useState(true)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const { addToCart } = useContext(CartContext)
+  const { addToCart, cartItems, increaseQuantity, decreaseQuantity } = useContext(CartContext)
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -83,9 +83,45 @@ export default function FeaturedProducts() {
                   <h3 className="product-name">{product.name}</h3>
                   <p className="product-description">{product.description}</p>
                   <p className="product-price">₹{product.price}</p>
-                  <button className="add-to-cart-btn" onClick={() => handleAddToCart(product)}>
-                    Add to Cart
-                  </button>
+                   {(() => {
+                       const cartItem = cartItems.find(item => item.id === (product._id || product.id))
+                    return cartItem ? (
+                   <div className="product-qty-controls">
+  <button
+    className="product-qty-btn"
+    onClick={(e) => {
+      e.stopPropagation()
+      decreaseQuantity(cartItem.id)
+    }}
+  >
+    −
+  </button>
+
+  <span className="product-qty-value">{cartItem.quantity}</span>
+
+  <button
+    className="product-qty-btn"
+    onClick={(e) => {
+      e.stopPropagation()
+      increaseQuantity(cartItem.id)
+    }}
+  >
+    +
+  </button>
+</div>
+
+           ) : (
+           <button
+          className="add-to-cart-btn"
+            onClick={(e) => {
+           e.stopPropagation()
+          handleAddToCart(product)
+             }}
+           >
+          Add to Cart
+           </button>
+             )
+           })()}
                 </div>
               </div>
             ))

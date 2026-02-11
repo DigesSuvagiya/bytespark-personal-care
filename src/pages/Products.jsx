@@ -239,6 +239,9 @@ export default function Products() {
         isOpen={!!selectedProduct}
         onClose={closeModal}
         onAddToCart={handleAddToCart}
+        cartItems={cartItems}
+        increaseQuantity={increaseQuantity}
+        decreaseQuantity={decreaseQuantity}
       />
 
       <Footer />
