@@ -56,29 +56,27 @@ export default function CartModal({ isOpen, onClose, user }) {
                   </div>
 
                   <div className="cart-item-details">
-                    <h4>{item.name}</h4>
-                    <p>{item.category}</p>
-
-                    <div className="cart-qty-controls">
-                      <button
-                       className="cart-qty-btn"
-                       onClick={() => decreaseQuantity(item.id)}
-                      >
-                      −
-                   </button>
-
-                   <span className="cart-qty-value">{item.quantity}</span>
-
-                  <button
-                  className="cart-qty-btn"
-                 onClick={() => increaseQuantity(item.id)}
-                  >
-                   +
-                 </button>
+                    <h4 className="cart-item-name">{item.name}</h4>
+                    <p className="cart-item-category">{item.category}</p>
+                    <p className="cart-item-unit-price">₹{item.price}</p>
                   </div>
 
-
-                    <p>₹{item.price}</p>
+                  <div className="cart-qty-controls">
+                    <button
+                      className="cart-qty-btn"
+                      onClick={() => decreaseQuantity(item.id)}
+                      aria-label="Decrease quantity"
+                    >
+                      −
+                    </button>
+                    <span className="cart-qty-value">{item.quantity}</span>
+                    <button
+                      className="cart-qty-btn"
+                      onClick={() => increaseQuantity(item.id)}
+                      aria-label="Increase quantity"
+                    >
+                      +
+                    </button>
                   </div>
 
                   <div className="cart-item-total">
@@ -88,6 +86,7 @@ export default function CartModal({ isOpen, onClose, user }) {
                   <button
                     className="cart-remove-btn"
                     onClick={() => removeFromCart(item.id)}
+                    aria-label="Remove from cart"
                   >
                     <FiTrash2 size={18} />
                   </button>

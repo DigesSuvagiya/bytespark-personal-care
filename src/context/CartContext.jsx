@@ -9,7 +9,6 @@ export function CartProvider({ children }) {
   return savedCart ? JSON.parse(savedCart) : []
 })
 
-
  
   useEffect(() => {
     localStorage.setItem('bytesparkCart', JSON.stringify(cartItems))

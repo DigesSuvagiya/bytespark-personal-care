@@ -5,11 +5,14 @@ import LoginModal from './LoginModal'
 import SignupModal from './SignupModal'
 import CartModal from './CartModal'
 import { CartContext } from '../context/CartContext'
+import { FiMenu, FiX } from "react-icons/fi";
+
 
 export default function Navigation() {
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isSignupOpen, setIsSignupOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { cartItems, removeFromCart, clearCart } = useContext(CartContext)
 
   const [user, setUser] = useState(null)
@@ -37,11 +40,16 @@ export default function Navigation() {
           <div className="navbar-brand">
           <Link to="/">Byte<span>spark</span> Personal Care</Link>
           </div>
-          <ul className="navbar-menu">
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/products">Products</Link></li>
-            <li><Link to="/learn-more">About Us</Link></li>
-            <li>
+          <button
+            className="hamburger"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMenuOpen}
+          >
+            {isMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+          </button>
+          <ul className={`navbar-menu ${isMenuOpen ? "active" : ""}`}>
+            <li className="navbar-menu-icons">
               <button
                 className="icon-button cart-icon"
                 onClick={() => setIsCartOpen(true)}
@@ -51,8 +59,6 @@ export default function Navigation() {
                 <FiShoppingCart size={28} />
                 {cartItemCount > 0 && <span className="cart-badge">{cartItemCount}</span>}
               </button>
-            </li>
-            <li>
               {user ? (
                 <button className="icon-button login-icon" onClick={handleLogout} title="Logout">
                   <FiLogOut size={28} />
@@ -63,6 +69,9 @@ export default function Navigation() {
                 </button>
               )}
             </li>
+            <li><Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link></li>
+            <li><Link to="/products" onClick={() => setIsMenuOpen(false)}>Products</Link></li>
+            <li><Link to="/learn-more" onClick={() => setIsMenuOpen(false)}>About Us</Link></li>
           </ul>
         </div>
       </nav>

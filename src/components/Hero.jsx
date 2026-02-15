@@ -5,7 +5,7 @@ export default function About() {
   return (
     <section className="hero" id="home">
       <div className="hero-container">
-        <h1>Skincare That's <span>Naturally Clean</span></h1>
+        <h1>Skincare That's Naturally Clean</h1>
         <p className="hero-subtitle">
           Dermatologically tested, naturally formulated personal care products 
           designed for your daily wellness. Trusted by families, crafted with care.
