@@ -1639,23 +1639,20 @@
   }
 }
 
-/* On small screens: keep categories usable without huge height */
+/* On small screens: wrap category buttons so none are cut off */
 @media (max-width: 640px) {
-  .filter-buttons {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 0.25rem;
+  .filter-section {
+    min-width: 0;
+    overflow: visible;
   }
 
-  /* hide scrollbar in most browsers */
-  .filter-buttons::-webkit-scrollbar {
-    height: 0;
+  .filter-buttons {
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
 
   .filter-btn {
     flex: 0 0 auto;
-    white-space: nowrap;
   }
 }
 
@@ -2105,12 +2102,17 @@
     gap: 1rem;
   }
 
+  .filter-section {
+    min-width: 0;
+  }
+
   .filter-buttons {
     gap: 0.5rem;
+    flex-wrap: wrap;
   }
 
   .filter-btn {
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.875rem;
     font-size: 0.85rem;
   }
 

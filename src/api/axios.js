@@ -7,7 +7,7 @@ const api = axios.create({
   },
 });
 
-export default api;
+// export default api;
 
 // import axios from "axios";
 
@@ -18,6 +18,19 @@ export default api;
 //   },
 // });
 
-// export default api;
+// ✅ Attach JWT token to every request
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("bytesparkToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+export default api;
+
 
 

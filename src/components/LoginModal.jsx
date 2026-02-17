@@ -3,7 +3,7 @@ import { FiX } from 'react-icons/fi'
 import api from "../api/axios";
 
 
-export default function LoginModal({ isOpen, onClose, onSignupClick, onLogin }) {
+export default function LoginModal({ isOpen, onClose, onSignupClick, onLogin  }) {
   const [mobileNo, setMobileNo] = useState('')
   const [password, setPassword] = useState('')
 
@@ -18,14 +18,11 @@ export default function LoginModal({ isOpen, onClose, onSignupClick, onLogin }) 
 
       alert("Login successful");
 
-      
-      try {
-        localStorage.setItem('bytesparkUser', JSON.stringify(res.data))
-      } catch (e) {
-        console.error('Failed to save user to localStorage', e)
-      }
-
     
+
+      localStorage.setItem("bytesparkToken", res.data.token);
+
+
       onLogin?.(res.data)
 
       onClose();

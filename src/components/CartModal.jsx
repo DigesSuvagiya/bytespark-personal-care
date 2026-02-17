@@ -3,7 +3,7 @@ import { FiX, FiTrash2 } from 'react-icons/fi'
 import CheckoutModal from './CheckoutModal'
 import { CartContext } from '../context/CartContext'
 
-export default function CartModal({ isOpen, onClose, user }) {
+export default function CartModal({ isOpen, onClose, isLoggedIn }) {
   if (!isOpen) return null
 
   const {
@@ -21,12 +21,13 @@ export default function CartModal({ isOpen, onClose, user }) {
   )
 
   const handleCheckout = () => {
-    if (!user) {
-      alert('Please login first to proceed with checkout')
-      return
+    const token = localStorage.getItem("bytesparkToken");
+    if (!isLoggedIn || !token) {
+      alert("Please login first to proceed with checkout");
+      return;
     }
-    setIsCheckoutOpen(true)
-  }
+    setIsCheckoutOpen(true);
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -111,7 +112,7 @@ export default function CartModal({ isOpen, onClose, user }) {
             onClose={() => setIsCheckoutOpen(false)}
             cartItems={cartItems}
             totalPrice={totalPrice}
-            user={user}
+            isLoggedIn={isLoggedIn}
           />
         )}
       </div>

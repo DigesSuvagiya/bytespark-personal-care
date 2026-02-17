@@ -15,21 +15,17 @@ export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { cartItems, removeFromCart, clearCart } = useContext(CartContext)
 
-  const [user, setUser] = useState(null)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem('bytesparkUser')
-      if (raw) setUser(JSON.parse(raw))
-    } catch (e) {
-      console.error('Failed to parse stored user', e)
-    }
-  }, [])
+useEffect(() => {
+  const token = localStorage.getItem("bytesparkToken");
+  setIsLoggedIn(!!token);
+}, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('bytesparkUser')
-    setUser(null)
-  }
+const handleLogout = () => {
+  localStorage.removeItem("bytesparkToken");
+  setIsLoggedIn(false);
+};
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
 
@@ -59,15 +55,16 @@ export default function Navigation() {
                 <FiShoppingCart size={28} />
                 {cartItemCount > 0 && <span className="cart-badge">{cartItemCount}</span>}
               </button>
-              {user ? (
-                <button className="icon-button login-icon" onClick={handleLogout} title="Logout">
-                  <FiLogOut size={28} />
-                </button>
-              ) : (
-                <button className="icon-button login-icon" onClick={() => setIsLoginOpen(true)} title="Login">
-                  <FiUser size={28} />
-                </button>
-              )}
+              {isLoggedIn ? (
+  <button className="icon-button login-icon" onClick={handleLogout} title="Logout">
+    <FiLogOut size={28} />
+  </button>
+) : (
+  <button className="icon-button login-icon" onClick={() => setIsLoginOpen(true)} title="Login">
+    <FiUser size={28} />
+  </button>
+)}
+
             </li>
             <li><Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link></li>
             <li><Link to="/products" onClick={() => setIsMenuOpen(false)}>Products</Link></li>
@@ -75,15 +72,29 @@ export default function Navigation() {
           </ul>
         </div>
       </nav>
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} onSignupClick={() => {
-        setIsLoginOpen(false)
-        setIsSignupOpen(true)
-      }} onLogin={(userData) => setUser(userData)} />
+      <LoginModal 
+  isOpen={isLoginOpen} 
+  onClose={() => setIsLoginOpen(false)} 
+  onSignupClick={() => {
+    setIsLoginOpen(false)
+    setIsSignupOpen(true)
+  }} 
+  onLogin={() => setIsLoggedIn(true)} 
+/>
+
       <SignupModal isOpen={isSignupOpen} onClose={() => setIsSignupOpen(false)}  onLoginClick={()=> {
         setIsLoginOpen(true)
         setIsSignupOpen(false)
       }} />
-      <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} cartItems={cartItems} removeFromCart={removeFromCart} clearCart={clearCart} user={user} />
+      <CartModal 
+  isOpen={isCartOpen} 
+  onClose={() => setIsCartOpen(false)} 
+  cartItems={cartItems} 
+  removeFromCart={removeFromCart} 
+  clearCart={clearCart} 
+  isLoggedIn={isLoggedIn} 
+/>
+
     </> 
   )
 }
