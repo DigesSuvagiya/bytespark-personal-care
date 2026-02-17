@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { FiX } from 'react-icons/fi'
 
-export default function CheckoutModal({ isOpen, onClose, cartItems, totalPrice, user, onSuccess }) {
+export default function CheckoutModal({ isOpen, onClose, cartItems, totalPrice, isLoggedIn, onSuccess }) {
   if (!isOpen) return null
 
   const [form, setForm] = useState({

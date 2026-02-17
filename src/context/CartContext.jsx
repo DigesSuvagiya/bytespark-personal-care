@@ -1,71 +1,77 @@
-import React, { createContext, useState, useEffect } from 'react'
+import React, { createContext, useState, useEffect } from "react";
+import api from "../api/axios";
 
-export const CartContext = createContext()
+export const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  
-  const [cartItems, setCartItems] = useState(() => {
-  const savedCart = localStorage.getItem("bytesparkCart")
-  return savedCart ? JSON.parse(savedCart) : []
-})
+  const [cartItems, setCartItems] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem("bytesparkToken")
+  );
 
   useEffect(() => {
-    localStorage.setItem('bytesparkCart', JSON.stringify(cartItems))
-  }, [cartItems])
+    const syncAuth = () => {
+      setIsLoggedIn(!!localStorage.getItem("bytesparkToken"));
+    };
 
-  const addToCart = (product) => {
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === product.id)
-      if (existingItem) {
-        return prevItems.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      }
-      return [...prevItems, { ...product, quantity: 1 }]
-    })
-  }
+    syncAuth();
+    window.addEventListener("storage", syncAuth);
 
-  const increaseQuantity = (productId) => {
-  setCartItems(prevItems =>
-    prevItems.map(item =>
-      item.id === productId
-        ? { ...item, quantity: item.quantity + 1 }
-        : item
-    )
-  )
-}
+    return () => window.removeEventListener("storage", syncAuth);
+  }, []);
 
-const decreaseQuantity = (productId) => {
-  setCartItems(prevItems =>
-    prevItems
-      .map(item =>
-        item.id === productId
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-      .filter(item => item.quantity > 0)
-  )
-}
+  // Load cart on login / refresh
+  useEffect(() => {
+    if (isLoggedIn) {
+      api.get("/cart")
+        .then((res) => setCartItems(res.data))
+        .catch(() => {});
+    } else {
+      setCartItems([]);
+    }
+  }, [isLoggedIn]);
 
+  const addToCart = async (product) => {
+    if (!isLoggedIn) {
+      alert("Please login first");
+      return;
+    }
+    const res = await api.post("/cart/add", { productId: product.id });
+    setCartItems(res.data);
+  };
 
-  const removeFromCart = (productId) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId))
-  }
+  const increaseQuantity = async (productId) => {
+    const res = await api.put("/cart/increase", { productId });
+    setCartItems(res.data);
+  };
 
-  const clearCart = () => {
-    setCartItems([])
-  }
+  const decreaseQuantity = async (productId) => {
+    const res = await api.put("/cart/decrease", { productId });
+    setCartItems(res.data);
+  };
 
-  const value = {
-    cartItems,
-    addToCart,
-    removeFromCart,
-    clearCart,
-    increaseQuantity,
-    decreaseQuantity,
-  }
+  const removeFromCart = async (productId) => {
+    const res = await api.delete(`/cart/remove/${productId}`);
+    setCartItems(res.data);
+  };
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>
+  const clearCart = async () => {
+    await api.delete("/cart/clear");
+    setCartItems([]);
+  };
+
+  return (
+    <CartContext.Provider
+      value={{
+        cartItems,
+        addToCart,
+        increaseQuantity,
+        decreaseQuantity,
+        removeFromCart,
+        clearCart,
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
 }

@@ -16,7 +16,7 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
   const totalPrice = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + (item.product?.price || 0) * item.quantity,
     0
   )
 
@@ -47,25 +47,28 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
           <>
             <div className="cart-items-list">
               {cartItems.map(item => (
-                <div key={item.id} className="cart-item">
+                <div key={item.product?._id} className="cart-item">
                   <div className="cart-item-icon">
-                    {item.image ? (
-                      <img src={`/products/${item.image}`} alt={item.name} />
+                    {item.product?.image ? (
+                      <img
+                        src={`/products/${item.product.image}`}
+                        alt={item.product.name}
+                      />
                     ) : (
                       <span>📦</span>
                     )}
                   </div>
 
                   <div className="cart-item-details">
-                    <h4 className="cart-item-name">{item.name}</h4>
-                    <p className="cart-item-category">{item.category}</p>
-                    <p className="cart-item-unit-price">₹{item.price}</p>
+                    <h4 className="cart-item-name">{item.product?.name}</h4>
+                    <p className="cart-item-category">{item.product?.category}</p>
+                    <p className="cart-item-unit-price">₹{item.product?.price}</p>
                   </div>
 
                   <div className="cart-qty-controls">
                     <button
                       className="cart-qty-btn"
-                      onClick={() => decreaseQuantity(item.id)}
+                      onClick={() => decreaseQuantity(item.product?._id)}
                       aria-label="Decrease quantity"
                     >
                       −
@@ -73,7 +76,7 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
                     <span className="cart-qty-value">{item.quantity}</span>
                     <button
                       className="cart-qty-btn"
-                      onClick={() => increaseQuantity(item.id)}
+                      onClick={() => increaseQuantity(item.product?._id)}
                       aria-label="Increase quantity"
                     >
                       +
@@ -81,12 +84,12 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
                   </div>
 
                   <div className="cart-item-total">
-                    ₹{item.price * item.quantity}
+                    ₹{(item.product?.price || 0) * item.quantity}
                   </div>
 
                   <button
                     className="cart-remove-btn"
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => removeFromCart(item.product?._id)}
                     aria-label="Remove from cart"
                   >
                     <FiTrash2 size={18} />
