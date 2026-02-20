@@ -42,14 +42,14 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart, ca
 
             <div className="product-modal-actions">
               {(() => {
-                       const cartItem = cartItems.find(item => item.id === (product._id || product.id))
+                       const cartItem = cartItems.find(item => item.product?._id === product._id)
                     return cartItem ? (
                    <div className="product-qty-controls">
   <button
     className="product-qty-btn"
     onClick={(e) => {
       e.stopPropagation()
-      decreaseQuantity(cartItem.id)
+      decreaseQuantity(product._id)
     }}
   >
     −
@@ -61,7 +61,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart, ca
     className="product-qty-btn"
     onClick={(e) => {
       e.stopPropagation()
-      increaseQuantity(cartItem.id)
+      increaseQuantity(product._id)
     }}
   >
     +

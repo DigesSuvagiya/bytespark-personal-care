@@ -8,7 +8,9 @@ export default function FeaturedProducts() {
   const [loading, setLoading] = useState(true)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const { addToCart, cartItems, increaseQuantity, decreaseQuantity } = useContext(CartContext)
+
+  const { addToCart, cartItems, increaseQuantity, decreaseQuantity } =
+    useContext(CartContext)
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -26,15 +28,9 @@ export default function FeaturedProducts() {
     fetchProducts()
   }, [])
 
+  // ✅ Always pass full backend product
   const handleAddToCart = (product) => {
-    addToCart({
-      id: product._id || product.id,
-      name: product.name,
-      price: product.price,
-      category: product.category,
-      image: product.image || '📦',
-      description: product.description,
-    })
+    addToCart(product)
   }
 
   return (
@@ -44,87 +40,94 @@ export default function FeaturedProducts() {
           <h2>Featured Products</h2>
           <p>Our most-loved personal care essentials</p>
         </div>
+
         <div className="products-grid">
           {loading ? (
             <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#999' }}>
               Loading featured products...
             </p>
           ) : products.length > 0 ? (
-            products.map(product => (
-              <div 
-                key={product._id || product.id} 
-                className="product-card"
-                onClick={() => {
-                  setSelectedProduct(product)
-                  setIsModalOpen(true)
-                }}
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+            products.map((product) => {
+              const cartItem = cartItems.find(
+                (item) => item.product?._id === product._id
+              )
+
+              return (
+                <div
+                  key={product._id}
+                  className="product-card"
+                  onClick={() => {
                     setSelectedProduct(product)
                     setIsModalOpen(true)
-                  }
-                }}
-                style={{ cursor: 'pointer' }}
-              >
-                <div className="product-image">
-                  {product.image ? (
-                    <img
-                      src={`/products/${product.image}`}
-                      alt={product.name}
-                      loading="lazy"
-                    />
-                  ) : null}
-                  <div style={{ display: product.image ? 'none' : 'flex' }}>
-                    {product.icon || "something went wrong"}
+                  }}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      setSelectedProduct(product)
+                      setIsModalOpen(true)
+                    }
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="product-image">
+                    {product.image ? (
+                      <img
+                        src={`/products/${product.image}`}
+                        alt={product.name}
+                        loading="lazy"
+                      />
+                    ) : null}
+                    <div style={{ display: product.image ? 'none' : 'flex' }}>
+                      {product.icon || '📦'}
+                    </div>
+                  </div>
+
+                  <div className="product-info">
+                    <h3 className="product-name">{product.name}</h3>
+                    <p className="product-description">{product.description}</p>
+                    <p className="product-price">₹{product.price}</p>
+
+                    {cartItem ? (
+                      <div className="product-qty-controls">
+                        <button
+                          className="product-qty-btn"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            decreaseQuantity(product._id)
+                          }}
+                        >
+                          −
+                        </button>
+
+                        <span className="product-qty-value">
+                          {cartItem.quantity}
+                        </span>
+
+                        <button
+                          className="product-qty-btn"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            increaseQuantity(product._id)
+                          }}
+                        >
+                          +
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        className="add-to-cart-btn"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleAddToCart(product)
+                        }}
+                      >
+                        Add to Cart
+                      </button>
+                    )}
                   </div>
                 </div>
-                <div className="product-info">
-                  <h3 className="product-name">{product.name}</h3>
-                  <p className="product-description">{product.description}</p>
-                  <p className="product-price">₹{product.price}</p>
-                   {(() => {
-                       const cartItem = cartItems.find(item => item.id === (product._id || product.id))
-                    return cartItem ? (
-                   <div className="product-qty-controls">
-  <button
-    className="product-qty-btn"
-    onClick={(e) => {
-      e.stopPropagation()
-      decreaseQuantity(cartItem.id)
-    }}
-  >
-    −
-  </button>
-
-  <span className="product-qty-value">{cartItem.quantity}</span>
-
-  <button
-    className="product-qty-btn"
-    onClick={(e) => {
-      e.stopPropagation()
-      increaseQuantity(cartItem.id)
-    }}
-  >
-    +
-  </button>
-</div>
-
-           ) : (
-           <button
-          className="add-to-cart-btn"
-            onClick={(e) => {
-           e.stopPropagation()
-          handleAddToCart(product)
-             }}
-           >
-          Add to Cart
-           </button>
-             )
-           })()}
-                </div>
-              </div>
-            ))
+              )
+            })
           ) : (
             <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#999' }}>
               No products available
@@ -132,7 +135,8 @@ export default function FeaturedProducts() {
           )}
         </div>
       </div>
-      <ProductModal 
+
+      <ProductModal
         product={selectedProduct}
         isOpen={isModalOpen}
         onClose={() => {

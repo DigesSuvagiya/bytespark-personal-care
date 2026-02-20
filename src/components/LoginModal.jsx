@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import { CartContext } from "../context/CartContext";
+import React, { useState,useContext } from 'react'
 import { FiX } from 'react-icons/fi'
 import api from "../api/axios";
 
@@ -6,6 +7,8 @@ import api from "../api/axios";
 export default function LoginModal({ isOpen, onClose, onSignupClick, onLogin  }) {
   const [mobileNo, setMobileNo] = useState('')
   const [password, setPassword] = useState('')
+
+  const { refreshCart } = useContext(CartContext);
 
   const handleSubmit = async (e) => {
   e.preventDefault();
@@ -16,12 +19,12 @@ export default function LoginModal({ isOpen, onClose, onSignupClick, onLogin  })
         password,
       });
 
-      alert("Login successful");
 
-    
+      alert("Login successful");
 
       localStorage.setItem("bytesparkToken", res.data.token);
 
+      await refreshCart();
 
       onLogin?.(res.data)
 

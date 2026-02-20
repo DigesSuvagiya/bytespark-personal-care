@@ -41,18 +41,18 @@ export default function Products() {
   }, []);
   
   
-  const filteredProducts = products.filter(p => {
-    const matchesCategory = selectedCategory === 'All' 
-      ? true 
-      : p.category && p.category.toLowerCase() === selectedCategory.toLowerCase()
-    
-    const matchesSearch = searchQuery === ''
-      ? true
-      : p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.description.toLowerCase().includes(searchQuery.toLowerCase())
-    
-    return matchesCategory && matchesSearch
-  })
+ const filteredProducts = products.filter(p => {
+  const matchesCategory = selectedCategory === 'All' 
+    ? true 
+    : p.category && p.category.toLowerCase() === selectedCategory.toLowerCase()
+
+  const matchesSearch = searchQuery === ''
+    ? true
+    : p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (p.description || "").toLowerCase().includes(searchQuery.toLowerCase())
+
+  return matchesCategory && matchesSearch
+})
 
   
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -65,18 +65,17 @@ export default function Products() {
 
   const [selectedProduct, setSelectedProduct] = useState(null)
   const closeModal = () => setSelectedProduct(null)
-  const { addToCart, cartItems, increaseQuantity, decreaseQuantity} = useContext(CartContext)
+  const { addToCart, cartItems, increaseQuantity, decreaseQuantity, refreshCart } =
+  useContext(CartContext);
 
-  const handleAddToCart = (product) => {
-    addToCart({
-      id: product._id || product.id,
-      name: product.name,
-      price: product.price,
-      category: product.category,
-      image: product.image || '📦',
-      description: product.description,
-    })
-  }
+useEffect(() => {
+  if (refreshCart) refreshCart();
+}, [refreshCart]);
+
+const handleAddToCart = (product) => {
+  console.log("Add to cart product:", product);
+  addToCart(product);
+};
 
   return (
     <div className="app">
@@ -181,14 +180,16 @@ export default function Products() {
                     <p className="product-category">{product.category}</p>
                     <p className="product-price">₹{product.price}</p>
                     {(() => {
-                       const cartItem = cartItems.find(item => item.id === (product._id || product.id))
+                       const cartItem = cartItems.find(
+  (item) => item.product?._id === product._id
+)
                     return cartItem ? (
                    <div className="product-qty-controls">
   <button
     className="product-qty-btn"
     onClick={(e) => {
       e.stopPropagation()
-      decreaseQuantity(cartItem.id)
+      decreaseQuantity(product._id)
     }}
   >
     −
@@ -200,7 +201,7 @@ export default function Products() {
     className="product-qty-btn"
     onClick={(e) => {
       e.stopPropagation()
-      increaseQuantity(cartItem.id)
+      increaseQuantity(product._id)
     }}
   >
     +

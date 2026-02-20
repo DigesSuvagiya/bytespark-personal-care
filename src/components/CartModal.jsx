@@ -46,8 +46,11 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
         ) : (
           <>
             <div className="cart-items-list">
-              {cartItems.map(item => (
-                <div key={item.product?._id} className="cart-item">
+              {cartItems.map((item, index) => (
+                <div
+                  key={item.product?._id || `cart-item-${index}`}   // ✅ FIXED KEY
+                  className="cart-item"
+                >
                   <div className="cart-item-icon">
                     {item.product?.image ? (
                       <img

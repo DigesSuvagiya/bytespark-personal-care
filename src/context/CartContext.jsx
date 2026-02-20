@@ -1,3 +1,4 @@
+// context/CartContext.jsx
 import React, { createContext, useState, useEffect } from "react";
 import api from "../api/axios";
 
@@ -5,55 +6,68 @@ export const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    !!localStorage.getItem("bytesparkToken")
-  );
 
-  useEffect(() => {
-    const syncAuth = () => {
-      setIsLoggedIn(!!localStorage.getItem("bytesparkToken"));
-    };
-
-    syncAuth();
-    window.addEventListener("storage", syncAuth);
-
-    return () => window.removeEventListener("storage", syncAuth);
-  }, []);
-
-  // Load cart on login / refresh
-  useEffect(() => {
-    if (isLoggedIn) {
-      api.get("/cart")
-        .then((res) => setCartItems(res.data))
-        .catch(() => {});
-    } else {
+  const refreshCart = async () => {
+    const token = localStorage.getItem("bytesparkToken");
+    if (!token) {
       setCartItems([]);
-    }
-  }, [isLoggedIn]);
-
-  const addToCart = async (product) => {
-    if (!isLoggedIn) {
-      alert("Please login first");
       return;
     }
-    const res = await api.post("/cart/add", { productId: product.id });
-    setCartItems(res.data);
+    try {
+      const res = await api.get("/cart");
+      setCartItems(res.data || []);
+    } catch (e) {
+      console.error("Failed to refresh cart", e);
+    }
   };
 
+  // Load cart on app mount & page refresh
+  useEffect(() => {
+    refreshCart();
+  }, []);
+
+ const addToCart = async (product) => {
+  try {
+    const productId = product?._id || product?.id;
+
+    if (!productId) {
+      console.error("Invalid product passed to addToCart:", product);
+      alert("Something went wrong. Product ID missing.");
+      return;
+    }
+
+    const res = await api.post("/cart/add", { productId });
+    setCartItems(res.data);
+  } catch (error) {
+    console.error("Add to cart failed:", error.response?.data || error.message);
+    alert("Failed to add item to cart. Please try again.");
+  }
+};
+  
   const increaseQuantity = async (productId) => {
     const res = await api.put("/cart/increase", { productId });
     setCartItems(res.data);
   };
 
-  const decreaseQuantity = async (productId) => {
+ const decreaseQuantity = async (productId) => {
+  try {
     const res = await api.put("/cart/decrease", { productId });
     setCartItems(res.data);
-  };
+  } catch (error) {
+    console.error("Decrease quantity failed:", error.response?.data || error.message);
+    alert("Failed to update cart. Please try again.");
+  }
+};
 
-  const removeFromCart = async (productId) => {
+const removeFromCart = async (productId) => {
+  try {
     const res = await api.delete(`/cart/remove/${productId}`);
     setCartItems(res.data);
-  };
+  } catch (error) {
+    console.error("Remove from cart failed:", error.response?.data || error.message);
+    alert("Failed to remove item. Please try again.");
+  }
+};
 
   const clearCart = async () => {
     await api.delete("/cart/clear");
@@ -69,6 +83,7 @@ export function CartProvider({ children }) {
         decreaseQuantity,
         removeFromCart,
         clearCart,
+        refreshCart, // 👈 exposed
       }}
     >
       {children}
