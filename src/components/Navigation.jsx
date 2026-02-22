@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { FiShoppingCart, FiUser, FiLogOut } from 'react-icons/fi'
+import { FiShoppingCart, FiUser, FiLogOut, FiMoon, FiSun } from 'react-icons/fi'
 import LoginModal from './LoginModal'
 import SignupModal from './SignupModal'
 import CartModal from './CartModal'
@@ -13,7 +13,10 @@ export default function Navigation() {
   const [isSignupOpen, setIsSignupOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { cartItems, removeFromCart, clearCart } = useContext(CartContext)
+  const [theme, setTheme] = useState(
+    document.documentElement.getAttribute('data-theme') || 'light'
+  )
+  const { cartItems } = useContext(CartContext)
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -26,6 +29,13 @@ const handleLogout = () => {
   localStorage.removeItem("bytesparkToken");
   setIsLoggedIn(false);
 };
+
+const toggleTheme = () => {
+  const nextTheme = theme === 'dark' ? 'light' : 'dark'
+  document.documentElement.setAttribute('data-theme', nextTheme)
+  localStorage.setItem('bytesparkTheme', nextTheme)
+  setTheme(nextTheme)
+}
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
 
@@ -54,6 +64,14 @@ const handleLogout = () => {
               >
                 <FiShoppingCart size={28} />
                 {cartItemCount > 0 && <span className="cart-badge">{cartItemCount}</span>}
+              </button>
+              <button
+                className="icon-button theme-icon"
+                onClick={toggleTheme}
+                aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+                title={theme === 'dark' ? 'Use light theme' : 'Use dark theme'}
+              >
+                {theme === 'dark' ? <FiSun size={26} /> : <FiMoon size={26} />}
               </button>
               {isLoggedIn ? (
   <button className="icon-button login-icon" onClick={handleLogout} title="Logout">
@@ -89,9 +107,6 @@ const handleLogout = () => {
       <CartModal 
   isOpen={isCartOpen} 
   onClose={() => setIsCartOpen(false)} 
-  cartItems={cartItems} 
-  removeFromCart={removeFromCart} 
-  clearCart={clearCart} 
   isLoggedIn={isLoggedIn} 
 />
 

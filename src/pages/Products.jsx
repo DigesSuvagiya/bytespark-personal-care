@@ -16,7 +16,8 @@ export default function Products() {
   const [sortBy, setSortBy] = useState('featured')
   const [searchQuery, setSearchQuery] = useState('')
   const [products, setProducts] = useState([])
-  const [error, setError] = useState(null)
+  const [, setError] = useState(null)
+
 
   useEffect(() => {
   window.scrollTo(0, 0);

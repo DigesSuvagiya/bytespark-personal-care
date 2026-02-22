@@ -6,6 +6,14 @@ import App from './App.jsx'
 import {BrowserRouter} from "react-router-dom";
 import { CartProvider } from './context/CartContext'
 
+const getInitialTheme = () => {
+  const savedTheme = localStorage.getItem('bytesparkTheme')
+  if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+document.documentElement.setAttribute('data-theme', getInitialTheme())
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>

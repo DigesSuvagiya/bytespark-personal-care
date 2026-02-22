@@ -11,15 +11,41 @@ html, body {
 
 
 :root {
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-soft: #ece5d5;
+  --color-surface-muted: #e8dcc8;
+  --color-surface-alt: #f5f5f5;
+  --color-surface-hover: #eeeeee;
+  --color-text: #1a1a1a;
+  --color-text-strong: #2c3e50;
+  --color-text-body: #555;
+  --color-text-muted: #666;
+  --color-text-subtle: #888;
+  --color-text-soft: #999;
+  --color-text-faint: #bbb;
+  --color-border: #f0f4f8;
+  --color-border-strong: #e0e8f0;
+  --color-border-alt: #e0e0e0;
+  --color-border-alt-2: #d0d0d0;
+  --color-border-warm: #bca087;
+  --color-brand: #7f6044;
+  --color-brand-strong: #7e5b3b;
+  --color-brand-hover: #5c4635;
+  --color-brand-mid: #8b6649;
+  --color-on-brand: #ffffff;
+  --color-danger: #e74c3c;
+  --color-danger-hover: #c0392b;
+
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   line-height: 1.6;
   font-weight: 400;
 
-  color-scheme: light;
-  color: #2c3e50;
-  background-color: #ffffff;
+  color-scheme: light dark;
+  color: var(--color-text-strong);
+  background-color: var(--color-bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -27,9 +53,35 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+[data-theme='dark'] {
+  --color-bg: #111315;
+  --color-surface: #1a1d21;
+  --color-surface-soft: #232830;
+  --color-surface-muted: #2a3039;
+  --color-surface-alt: #20242b;
+  --color-surface-hover: #2a2f38;
+  --color-text: #f3f4f6;
+  --color-text-strong: #e8ebf0;
+  --color-text-body: #d3d8e0;
+  --color-text-muted: #bec5cf;
+  --color-text-subtle: #a7afba;
+  --color-text-soft: #969fab;
+  --color-text-faint: #838c98;
+  --color-border: #2d3440;
+  --color-border-strong: #3a4250;
+  --color-border-alt: #3c4451;
+  --color-border-alt-2: #4a5361;
+  --color-border-warm: #7f6a56;
+  --color-brand: #b88a63;
+  --color-brand-strong: #c49771;
+  --color-brand-hover: #d6ac87;
+  --color-brand-mid: #b98e68;
+  --color-on-brand: #121418;
+}
+
 body {
   margin: 0;
-  background-color: #ffffff;
+  background-color: var(--color-bg);
   min-width: 320px;
 }
 
@@ -41,37 +93,37 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--color-text);
 }
 
 h2 {
   font-size: 2.4em;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--color-text);
   margin-bottom: 1rem;
 }
 
 h3 {
   font-size: 1.5em;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--color-text-strong);
   margin-bottom: 0.5rem;
 }
 
 p {
-  color: #555;
+  color: var(--color-text-body);
   font-size: 1rem;
   line-height: 1.7;
 }
 
 a {
-  color: #7F6044;
+  color: var(--color-brand);
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 a:hover {
-  color: #5C4635;
+  color: var(--color-brand-hover);
 }
 
 button {
@@ -81,14 +133,14 @@ button {
   font-size: 1em;
   font-weight: 600;
   font-family: inherit;
-  background-color: #7F6044;
-  color: #ffffff;
+  background-color: var(--color-brand);
+  color: var(--color-on-brand);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 button:hover {
-  background-color: #c59774;
+  background-color: var(--color-brand-mid);
   transform: translateY(-2px);
 }
 
@@ -97,13 +149,13 @@ button:active {
 }
 
 button.secondary {
-  background-color: #f0f4f8;
-  color: #2c3e50;
-  border: 1px solid #e0e8f0;
+  background-color: var(--color-border);
+  color: var(--color-text-strong);
+  border: 1px solid var(--color-border-strong);
 }
 
 button.secondary:hover {
-  background-color: #e0e8f0;
+  background-color: var(--color-border-strong);
 }
 
 @media (max-width: 768px) {
