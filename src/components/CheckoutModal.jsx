@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useContext } from 'react'
 import { FiX } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
+import api from '../api/axios'
+import { CartContext } from '../context/CartContext'
 
-export default function CheckoutModal({ isOpen, onClose, cartItems, totalPrice, isLoggedIn, onSuccess }) {
-  if (!isOpen) return null
-
+export default function CheckoutModal({ isOpen, onClose, cartItems, totalPrice, onOrderPlaced }) {
   const [form, setForm] = useState({
     fullName: '',
     email: '',
@@ -12,16 +13,15 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, totalPrice, 
     city: '',
     state: '',
     zip: '',
-    paymentMethod: 'cod'
+    paymentMethod: 'cod',
   })
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    if (user) {
-      setForm(prev => ({ ...prev, email: user.email || prev.email, fullName: user.name || prev.fullName }))
-    }
-  }, [user])
+  const navigate = useNavigate()
+  const { clearCart } = useContext(CartContext)
+
+  if (!isOpen) return null
 
   const validate = () => {
     const e = {}
@@ -38,27 +38,42 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, totalPrice, 
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setForm(prev => ({ ...prev, [name]: value }))
+    setForm((prev) => ({ ...prev, [name]: value }))
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!validate()) return
+
+    if (!cartItems?.length) {
+      alert('Your cart is empty.')
+      return
+    }
+
     setLoading(true)
-    
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 900))
-      const order = {
-        id: 'ORDER-' + Date.now(),
-        items: cartItems,
-        total: totalPrice,
-        shipping: 'Free',
-        buyer: { ...form }
+      const payload = {
+        shipping: {
+          fullName: form.fullName,
+          email: form.email,
+          phone: form.phone,
+          address: form.address,
+          city: form.city,
+          state: form.state,
+          zip: form.zip,
+        },
+        paymentMethod: form.paymentMethod,
       }
-      onSuccess?.(order)
+
+      const res = await api.post('/orders', payload)
+      await clearCart()
+
+      onOrderPlaced?.(res.data)
+      navigate('/order-success', { state: { order: res.data } })
     } catch (err) {
       console.error('Order failed', err)
-      alert('Failed to place order. Please try again.')
+      alert(err.response?.data?.message || 'Failed to place order. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -73,13 +88,13 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, totalPrice, 
 
         <div className="modal-header">
           <h2>Secure Checkout</h2>
-          <p>Complete your order — fast, simple and secure</p>
+          <p>Complete your order - fast, simple and secure</p>
         </div>
 
         <form className="signup-form checkout-form" onSubmit={handleSubmit} noValidate>
           <div className="form-group">
             <label>Full Name</label>
-            <input type="text" className="" name="fullName" value={form.fullName} onChange={handleChange} />
+            <input type="text" name="fullName" value={form.fullName} onChange={handleChange} />
             {errors.fullName && <small className="field-error">{errors.fullName}</small>}
           </div>
 
@@ -124,17 +139,19 @@ export default function CheckoutModal({ isOpen, onClose, cartItems, totalPrice, 
             <label>Payment Method</label>
             <select name="paymentMethod" value={form.paymentMethod} onChange={handleChange}>
               <option value="cod">Cash on Delivery</option>
-              <option value="card">Card (mock)</option>
+              <option value="card">Card</option>
             </select>
           </div>
 
           <div className="order-summary themed-summary">
             <div>Items: {cartItems.length}</div>
-            <div className="summary-amount">₹{totalPrice}</div>
+            <div className="summary-amount">Rs.{totalPrice}</div>
           </div>
 
           <div className="modal-footer">
-            <button type="submit" className="signup-btn" disabled={loading}>{loading ? 'Placing order...' : 'Place Order'}</button>
+            <button type="submit" className="signup-btn" disabled={loading}>
+              {loading ? 'Placing order...' : 'Place Order'}
+            </button>
           </div>
         </form>
       </div>

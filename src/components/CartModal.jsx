@@ -4,8 +4,6 @@ import CheckoutModal from './CheckoutModal'
 import { CartContext } from '../context/CartContext'
 
 export default function CartModal({ isOpen, onClose, isLoggedIn }) {
-  if (!isOpen) return null
-
   const {
     cartItems,
     removeFromCart,
@@ -15,19 +13,21 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
 
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
+  if (!isOpen) return null
+
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + (item.product?.price || 0) * item.quantity,
     0
   )
 
   const handleCheckout = () => {
-    const token = localStorage.getItem("bytesparkToken");
+    const token = localStorage.getItem("bytesparkToken")
     if (!isLoggedIn || !token) {
-      alert("Please login first to proceed with checkout");
-      return;
+      alert('Please login first to proceed with checkout')
+      return
     }
-    setIsCheckoutOpen(true);
-  };
+    setIsCheckoutOpen(true)
+  }
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -48,7 +48,7 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
             <div className="cart-items-list">
               {cartItems.map((item, index) => (
                 <div
-                  key={item.product?._id || `cart-item-${index}`}   // ✅ FIXED KEY
+                  key={item.product?._id || `cart-item-${index}`}
                   className="cart-item"
                 >
                   <div className="cart-item-icon">
@@ -58,14 +58,14 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
                         alt={item.product.name}
                       />
                     ) : (
-                      <span>📦</span>
+                      <span>??</span>
                     )}
                   </div>
 
                   <div className="cart-item-details">
                     <h4 className="cart-item-name">{item.product?.name}</h4>
                     <p className="cart-item-category">{item.product?.category}</p>
-                    <p className="cart-item-unit-price">₹{item.product?.price}</p>
+                    <p className="cart-item-unit-price">Rs.{item.product?.price}</p>
                   </div>
 
                   <div className="cart-qty-controls">
@@ -74,7 +74,7 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
                       onClick={() => decreaseQuantity(item.product?._id)}
                       aria-label="Decrease quantity"
                     >
-                      −
+                      -
                     </button>
                     <span className="cart-qty-value">{item.quantity}</span>
                     <button
@@ -87,7 +87,7 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
                   </div>
 
                   <div className="cart-item-total">
-                    ₹{(item.product?.price || 0) * item.quantity}
+                    Rs.{(item.product?.price || 0) * item.quantity}
                   </div>
 
                   <button
@@ -102,7 +102,7 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
             </div>
 
             <div className="cart-summary">
-              <p><strong>Total:</strong> ₹{totalPrice}</p>
+              <p><strong>Total:</strong> Rs.{totalPrice}</p>
             </div>
 
             <div className="cart-actions">
@@ -118,7 +118,10 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
             onClose={() => setIsCheckoutOpen(false)}
             cartItems={cartItems}
             totalPrice={totalPrice}
-            isLoggedIn={isLoggedIn}
+            onOrderPlaced={() => {
+              setIsCheckoutOpen(false)
+              onClose()
+            }}
           />
         )}
       </div>

@@ -37,7 +37,7 @@ const toggleTheme = () => {
   setTheme(nextTheme)
 }
 
-  const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
+const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
     <>
@@ -86,6 +86,7 @@ const toggleTheme = () => {
             </li>
             <li><Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link></li>
             <li><Link to="/products" onClick={() => setIsMenuOpen(false)}>Products</Link></li>
+            <li><Link to="/orders" onClick={() => setIsMenuOpen(false)}>Orders</Link></li>
             <li><Link to="/learn-more" onClick={() => setIsMenuOpen(false)}>About Us</Link></li>
           </ul>
         </div>
