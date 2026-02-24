@@ -4,6 +4,7 @@ import { FiShoppingCart, FiUser, FiLogOut, FiMoon, FiSun } from 'react-icons/fi'
 import LoginModal from './LoginModal'
 import SignupModal from './SignupModal'
 import CartModal from './CartModal'
+import OrderModal from './OrderModal'
 import { CartContext } from '../context/CartContext'
 import { FiMenu, FiX } from "react-icons/fi";
 
@@ -12,6 +13,7 @@ export default function Navigation() {
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isSignupOpen, setIsSignupOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [isOrderOpen, setIsOrderOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [theme, setTheme] = useState(
     document.documentElement.getAttribute('data-theme') || 'light'
@@ -86,7 +88,7 @@ const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
             </li>
             <li><Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link></li>
             <li><Link to="/products" onClick={() => setIsMenuOpen(false)}>Products</Link></li>
-            <li><Link to="/orders" onClick={() => setIsMenuOpen(false)}>Orders</Link></li>
+            <li><button className="nav-link-button" onClick={() => { setIsOrderOpen(true); setIsMenuOpen(false) }}>Orders</button></li>
             <li><Link to="/learn-more" onClick={() => setIsMenuOpen(false)}>About Us</Link></li>
           </ul>
         </div>
@@ -110,6 +112,10 @@ const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
   onClose={() => setIsCartOpen(false)} 
   isLoggedIn={isLoggedIn} 
 />
+      <OrderModal
+        isOpen={isOrderOpen}
+        onClose={() => setIsOrderOpen(false)}
+      />
 
     </> 
   )

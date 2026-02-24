@@ -1,6 +1,8 @@
 import React, { useState, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { FiX, FiTrash2 } from 'react-icons/fi'
 import CheckoutModal from './CheckoutModal'
+import OrderModal from './OrderModal'
 import { CartContext } from '../context/CartContext'
 
 export default function CartModal({ isOpen, onClose, isLoggedIn }) {
@@ -11,7 +13,9 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
     decreaseQuantity,
   } = useContext(CartContext)
 
+  const navigate = useNavigate()
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+  const [isOrderOpen, setIsOrderOpen] = useState(false)
 
   if (!isOpen) return null
 
@@ -29,6 +33,11 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
     setIsCheckoutOpen(true)
   }
 
+  const handleShopNow = () => {
+    onClose()
+    navigate('/products')
+  }
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
@@ -42,7 +51,13 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
         <h2>Shopping Cart</h2>
 
         {cartItems.length === 0 ? (
-          <p>Your cart is empty</p>
+          <>
+            <p>Your cart is empty</p>
+            <div className="cart-actions">
+              <button onClick={() => setIsOrderOpen(true)}>Your Orders</button>
+              <button onClick={handleShopNow}>Shop Now</button>
+            </div>
+          </>
         ) : (
           <>
             <div className="cart-items-list">
@@ -124,6 +139,11 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
             }}
           />
         )}
+
+        <OrderModal
+          isOpen={isOrderOpen}
+          onClose={() => setIsOrderOpen(false)}
+        />
       </div>
     </div>
   )

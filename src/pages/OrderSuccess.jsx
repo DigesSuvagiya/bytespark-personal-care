@@ -22,8 +22,7 @@ export default function OrderSuccess() {
               <strong>Total:</strong> Rs.{order?.totalPrice ?? 0}
             </p>
             <div className="orders-actions">
-              <Link to="/orders" className="cta-button">View Order History</Link>
-              <Link to="/products" className="secondary">Continue Shopping</Link>
+              <Link to="/products" className="cta-button">Continue Shopping</Link>
             </div>
           </div>
         </div>
