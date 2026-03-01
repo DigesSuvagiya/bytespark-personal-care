@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getStoredToken } from "../context/AuthContext";
 
 const api = axios.create({
   baseURL: "https://bsp-backend-femb.onrender.com/api",
@@ -17,7 +18,7 @@ const api = axios.create({
 // ✅ Attach JWT token to every request
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("bytesparkToken");
+    const token = getStoredToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

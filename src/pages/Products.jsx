@@ -7,6 +7,7 @@ import Navigation from '../components/Navigation'
 import ProductModal from '../components/ProductModal'
 import { CartContext } from '../context/CartContext'
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 export default function Products() {
 
@@ -17,6 +18,7 @@ export default function Products() {
   const [searchQuery, setSearchQuery] = useState('')
   const [products, setProducts] = useState([])
   const [, setError] = useState(null)
+  const { isAdmin } = useAuth();
 
 
   useEffect(() => {
@@ -180,7 +182,7 @@ const handleAddToCart = (product) => {
                     <p className="product-description">{product.description}</p>
                     <p className="product-category">{product.category}</p>
                     <p className="product-price">₹{product.price}</p>
-                    {(() => {
+                    {!isAdmin && (() => {
                        const cartItem = cartItems.find(
   (item) => item.product?._id === product._id
 )

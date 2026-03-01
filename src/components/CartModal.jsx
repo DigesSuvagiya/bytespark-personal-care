@@ -4,6 +4,7 @@ import { FiX, FiTrash2 } from 'react-icons/fi'
 import CheckoutModal from './CheckoutModal'
 import OrderModal from './OrderModal'
 import { CartContext } from '../context/CartContext'
+import { useAuth } from '../context/AuthContext'
 
 export default function CartModal({ isOpen, onClose, isLoggedIn }) {
   const {
@@ -14,6 +15,7 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
   } = useContext(CartContext)
 
   const navigate = useNavigate()
+  const { token } = useAuth()
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
   const [isOrderOpen, setIsOrderOpen] = useState(false)
 
@@ -25,7 +27,6 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
   )
 
   const handleCheckout = () => {
-    const token = localStorage.getItem("bytesparkToken")
     if (!isLoggedIn || !token) {
       alert('Please login first to proceed with checkout')
       return

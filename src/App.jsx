@@ -4,6 +4,8 @@ import Home from './Home'
 import Products from './pages/Products'
 import LearnMore from './pages/LearnMore'
 import OrderSuccess from './pages/OrderSuccess'
+import AdminDashboard from './pages/AdminDashboard'
+import RequireAdmin from './components/RequireAdmin'
 
 function App() {
   return (
@@ -12,6 +14,14 @@ function App() {
       <Route path="/products" element={<Products />} />
       <Route path="/learn-more" element={<LearnMore />} />
       <Route path="/order-success" element={<OrderSuccess />} />
+      <Route
+        path="/admin/dashboard"
+        element={(
+          <RequireAdmin>
+            <AdminDashboard />
+          </RequireAdmin>
+        )}
+      />
     </Routes>
   )
 }

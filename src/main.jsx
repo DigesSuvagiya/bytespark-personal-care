@@ -5,6 +5,7 @@ import './styles/learn-more.css'
 import App from './App.jsx'
 import {BrowserRouter} from "react-router-dom";
 import { CartProvider } from './context/CartContext'
+import { AuthProvider } from './context/AuthContext'
 
 const getInitialTheme = () => {
   const savedTheme = localStorage.getItem('bytesparkTheme')
@@ -17,9 +18,11 @@ document.documentElement.setAttribute('data-theme', getInitialTheme())
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <CartProvider>
-        <App />
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <App />
+        </CartProvider>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>
 )

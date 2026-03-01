@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { FiX } from 'react-icons/fi'
 import api from '../api/axios'
+import { useAuth } from '../context/AuthContext'
 
 export default function OrderModal({ isOpen, onClose }) {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const { token } = useAuth()
 
   useEffect(() => {
     if (!isOpen) return
 
     const fetchOrders = async () => {
-      const token = localStorage.getItem('bytesparkToken')
       if (!token) {
         setOrders([])
         setError('Please login to view your orders.')
@@ -32,7 +33,7 @@ export default function OrderModal({ isOpen, onClose }) {
     }
 
     fetchOrders()
-  }, [isOpen])
+  }, [isOpen, token])
 
   if (!isOpen) return null
 

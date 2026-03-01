@@ -2,6 +2,7 @@ import { CartContext } from "../context/CartContext";
 import React, { useState,useContext } from 'react'
 import { FiX } from 'react-icons/fi'
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 
 export default function LoginModal({ isOpen, onClose, onSignupClick, onLogin  }) {
@@ -9,6 +10,7 @@ export default function LoginModal({ isOpen, onClose, onSignupClick, onLogin  })
   const [password, setPassword] = useState('')
 
   const { refreshCart } = useContext(CartContext);
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
   e.preventDefault();
@@ -19,14 +21,20 @@ export default function LoginModal({ isOpen, onClose, onSignupClick, onLogin  })
         password,
       });
 
+      const role = res.data.role || "user";
+      login({
+        token: res.data.token,
+        role,
+      });
 
-      alert("Login successful");
+      if (role === "admin") {
+        alert("Admin login successful");
+      } else {
+        alert("Login successful");
+        await refreshCart();
+      }
 
-      localStorage.setItem("bytesparkToken", res.data.token);
-
-      await refreshCart();
-
-      onLogin?.(res.data)
+      onLogin?.({ ...res.data, role })
 
       onClose();
 
