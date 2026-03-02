@@ -1,19 +1,19 @@
 import axios from "axios";
 import { getStoredToken } from "../context/AuthContext";
 
-const api = axios.create({
-  baseURL: "https://bsp-backend-femb.onrender.com/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
 // const api = axios.create({
-//   baseURL: "http://localhost:8000/api",
+//   baseURL: "https://bsp-backend-femb.onrender.com/api",
 //   headers: {
 //     "Content-Type": "application/json",
 //   },
 // });
+
+const api = axios.create({
+  baseURL: "http://localhost:8000/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 // ✅ Attach JWT token to every request
 api.interceptors.request.use(

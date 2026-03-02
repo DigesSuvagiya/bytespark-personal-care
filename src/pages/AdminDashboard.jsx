@@ -8,12 +8,40 @@ import "./admin-dashboard.css";
 
 const SIDEBAR_TABS = ["Orders", "Add Product", "Profile"];
 const ORDER_STATUS_OPTIONS = ["placed", "processing", "shipped", "delivered", "cancelled"];
+const PROFILE_STORAGE_KEY = "bytesparkAdminProfileDemo";
+
+const DEFAULT_PROFILE = {
+  displayName: "ByteSpark Admin",
+  email: "admin@bytespark.demo",
+  phone: "+91 98765 43210",
+  department: "Operations",
+  timezone: "Asia/Kolkata",
+  bio: "Responsible for catalog updates, order monitoring, and fulfillment coordination.",
+  alertsByEmail: true,
+  alertsBySms: false,
+};
 
 const formatCurrency = (value) => `Rs.${Number(value || 0).toLocaleString("en-IN")}`;
 
 const formatDateTime = (value) => {
   if (!value) return "--";
   return new Date(value).toLocaleString();
+};
+
+const getInitialProfile = () => {
+  if (typeof window === "undefined") {
+    return { ...DEFAULT_PROFILE };
+  }
+
+  try {
+    const stored = window.localStorage.getItem(PROFILE_STORAGE_KEY);
+    if (!stored) return { ...DEFAULT_PROFILE };
+
+    const parsed = JSON.parse(stored);
+    return { ...DEFAULT_PROFILE, ...parsed };
+  } catch {
+    return { ...DEFAULT_PROFILE };
+  }
 };
 
 export default function AdminDashboard() {
@@ -37,6 +65,10 @@ export default function AdminDashboard() {
   const [addProductInfo, setAddProductInfo] = useState("");
   const [addProductError, setAddProductError] = useState("");
   const [addProductSubmitting, setAddProductSubmitting] = useState(false);
+  const [isEditProductModalOpen, setIsEditProductModalOpen] = useState(false);
+  const [editProductSubmitting, setEditProductSubmitting] = useState(false);
+  const [editProductError, setEditProductError] = useState("");
+  const [editingProductId, setEditingProductId] = useState("");
   const [addProductForm, setAddProductForm] = useState({
     name: "",
     description: "",
@@ -44,6 +76,18 @@ export default function AdminDashboard() {
     category: "",
     image: "",
   });
+  const [editProductForm, setEditProductForm] = useState({
+    name: "",
+    description: "",
+    price: "",
+    category: "",
+    image: "",
+  });
+  const [savedProfile, setSavedProfile] = useState(getInitialProfile);
+  const [profileForm, setProfileForm] = useState(getInitialProfile);
+  const [profileNotice, setProfileNotice] = useState("");
+  const [profileNoticeType, setProfileNoticeType] = useState("info");
+  const [profileDirty, setProfileDirty] = useState(false);
 
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -57,6 +101,19 @@ export default function AdminDashboard() {
     () => orders.reduce((sum, order) => sum + Number(order.totalPrice || 0), 0),
     [orders]
   );
+
+  const profileCompletion = useMemo(() => {
+    const requiredFields = [
+      profileForm.displayName,
+      profileForm.email,
+      profileForm.phone,
+      profileForm.department,
+      profileForm.timezone,
+      profileForm.bio,
+    ];
+    const completed = requiredFields.filter((field) => String(field || "").trim()).length;
+    return Math.round((completed / requiredFields.length) * 100);
+  }, [profileForm]);
 
   useEffect(() => {
     let mounted = true;
@@ -163,6 +220,20 @@ export default function AdminDashboard() {
     setAddProductSubmitting(false);
   };
 
+  const closeEditProductModal = () => {
+    setIsEditProductModalOpen(false);
+    setEditProductSubmitting(false);
+    setEditProductError("");
+    setEditingProductId("");
+    setEditProductForm({
+      name: "",
+      description: "",
+      price: "",
+      category: "",
+      image: "",
+    });
+  };
+
   const openAddProductModal = () => {
     setAddProductForm({
       name: "",
@@ -179,6 +250,11 @@ export default function AdminDashboard() {
   const handleAddProductFieldChange = (event) => {
     const { name, value } = event.target;
     setAddProductForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditProductFieldChange = (event) => {
+    const { name, value } = event.target;
+    setEditProductForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAddProductSubmit = async (event) => {
@@ -249,6 +325,65 @@ export default function AdminDashboard() {
     }
   };
 
+  const openEditProductModal = (product) => {
+    setEditingProductId(product?._id || "");
+    setEditProductForm({
+      name: product?.name || "",
+      description: product?.description || "",
+      price: String(product?.price ?? ""),
+      category: product?.category || "",
+      image: product?.image || "",
+    });
+    setEditProductError("");
+    setIsEditProductModalOpen(true);
+  };
+
+  const handleEditProductSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!editingProductId) {
+      setEditProductError("No product selected for edit.");
+      return;
+    }
+
+    const payload = {
+      name: editProductForm.name.trim(),
+      description: editProductForm.description.trim(),
+      price: Number(editProductForm.price),
+      category: editProductForm.category.trim(),
+    };
+
+    if (!payload.name || !payload.category) {
+      setEditProductError("Name and category are required.");
+      return;
+    }
+
+    if (!Number.isFinite(payload.price) || payload.price <= 0) {
+      setEditProductError("Price must be greater than 0.");
+      return;
+    }
+
+    setEditProductSubmitting(true);
+    setEditProductError("");
+
+    try {
+      const res = await api.put(`/products/admin/${editingProductId}`, payload);
+      const updatedProduct = res.data;
+
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product._id === updatedProduct._id ? { ...product, ...updatedProduct } : product
+        )
+      );
+      setProductsNotice("Product updated successfully.");
+      closeEditProductModal();
+    } catch (error) {
+      setEditProductError(error.response?.data?.message || "Failed to update product");
+    } finally {
+      setEditProductSubmitting(false);
+    }
+  };
+
   const handleStatusUpdate = async () => {
     if (!selectedOrder?._id) return;
 
@@ -276,6 +411,61 @@ export default function AdminDashboard() {
     } finally {
       setStatusUpdating(false);
     }
+  };
+
+  const handleProfileFieldChange = (event) => {
+    const { name, value, type, checked } = event.target;
+    setProfileForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+    setProfileDirty(true);
+    setProfileNotice("");
+  };
+
+  const handleProfileSubmit = (event) => {
+    event.preventDefault();
+
+    const normalizedProfile = {
+      ...profileForm,
+      displayName: profileForm.displayName.trim(),
+      email: profileForm.email.trim().toLowerCase(),
+      phone: profileForm.phone.trim(),
+      department: profileForm.department.trim(),
+      timezone: profileForm.timezone.trim(),
+      bio: profileForm.bio.trim(),
+    };
+
+    if (!normalizedProfile.displayName || !normalizedProfile.email) {
+      setProfileNoticeType("error");
+      setProfileNotice("Display name and email are required.");
+      return;
+    }
+
+    setProfileForm(normalizedProfile);
+    setSavedProfile(normalizedProfile);
+
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(normalizedProfile));
+    }
+
+    setProfileDirty(false);
+    setProfileNoticeType("success");
+    setProfileNotice(`Demo profile saved locally at ${new Date().toLocaleTimeString()}.`);
+  };
+
+  const handleProfileReset = () => {
+    setProfileForm(savedProfile);
+    setProfileDirty(false);
+    setProfileNoticeType("info");
+    setProfileNotice("Unsaved changes were discarded.");
+  };
+
+  const handleProfileDefaults = () => {
+    setProfileForm({ ...DEFAULT_PROFILE });
+    setProfileDirty(true);
+    setProfileNoticeType("info");
+    setProfileNotice("Default demo data loaded. Click Save Profile to persist.");
   };
 
   return (
@@ -434,6 +624,7 @@ export default function AdminDashboard() {
                           <th>Category</th>
                           <th>Price</th>
                           <th>Description</th>
+                          <th>Action</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -460,12 +651,190 @@ export default function AdminDashboard() {
                             <td data-label="Description" className="admin-product-desc">
                               {product.description || "--"}
                             </td>
+                            <td data-label="Action" className="admin-cell-action">
+                              <button
+                                type="button"
+                                className="admin-view-btn"
+                                onClick={() => openEditProductModal(product)}
+                              >
+                                Edit
+                              </button>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
                 )}
+              </div>
+            ) : activeTab === "Profile" ? (
+              <div className="admin-profile-wrap">
+                <div className="admin-profile-head">
+                  <div>
+                    <h3>Admin Profile (Demo)</h3>
+                    <p>
+                      This module is frontend-only for demo purposes. Changes are saved in your browser
+                      storage, not in backend/database.
+                    </p>
+                  </div>
+                  <span className="admin-profile-chip">{profileCompletion}% complete</span>
+                </div>
+
+                <div className="admin-profile-layout">
+                  <form className="admin-profile-form" onSubmit={handleProfileSubmit}>
+                    <div className="admin-profile-grid">
+                      <label>
+                        Display Name
+                        <input
+                          type="text"
+                          name="displayName"
+                          value={profileForm.displayName}
+                          onChange={handleProfileFieldChange}
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        Email
+                        <input
+                          type="email"
+                          name="email"
+                          value={profileForm.email}
+                          onChange={handleProfileFieldChange}
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        Phone
+                        <input
+                          type="text"
+                          name="phone"
+                          value={profileForm.phone}
+                          onChange={handleProfileFieldChange}
+                        />
+                      </label>
+
+                      <label>
+                        Department
+                        <input
+                          type="text"
+                          name="department"
+                          value={profileForm.department}
+                          onChange={handleProfileFieldChange}
+                        />
+                      </label>
+
+                      <label>
+                        Timezone
+                        <input
+                          type="text"
+                          name="timezone"
+                          value={profileForm.timezone}
+                          onChange={handleProfileFieldChange}
+                        />
+                      </label>
+
+                      <label>
+                        Role
+                        <input type="text" value="Administrator" disabled />
+                      </label>
+                    </div>
+
+                    <label className="admin-profile-bio-label">
+                      Bio
+                      <textarea
+                        name="bio"
+                        value={profileForm.bio}
+                        onChange={handleProfileFieldChange}
+                        rows="4"
+                      />
+                    </label>
+
+                    <div className="admin-profile-toggles">
+                      <label className="admin-profile-toggle">
+                        <input
+                          type="checkbox"
+                          name="alertsByEmail"
+                          checked={profileForm.alertsByEmail}
+                          onChange={handleProfileFieldChange}
+                        />
+                        Email alerts for new orders
+                      </label>
+
+                      <label className="admin-profile-toggle">
+                        <input
+                          type="checkbox"
+                          name="alertsBySms"
+                          checked={profileForm.alertsBySms}
+                          onChange={handleProfileFieldChange}
+                        />
+                        SMS alerts for high-priority issues
+                      </label>
+                    </div>
+
+                    {profileNotice && (
+                      <p className={`admin-profile-notice admin-profile-notice-${profileNoticeType}`}>
+                        {profileNotice}
+                      </p>
+                    )}
+
+                    <div className="admin-profile-actions">
+                      <button type="button" className="admin-view-btn" onClick={handleProfileDefaults}>
+                        Load Defaults
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-view-btn"
+                        onClick={handleProfileReset}
+                        disabled={!profileDirty}
+                      >
+                        Reset Changes
+                      </button>
+                      <button type="submit" className="admin-btn" disabled={!profileDirty}>
+                        Save Profile
+                      </button>
+                    </div>
+                  </form>
+
+                  <aside className="admin-profile-side">
+                    <article className="admin-profile-card">
+                      <p className="admin-card-label">Quick Snapshot</p>
+                      <ul className="admin-profile-list">
+                        <li>
+                          <span>Managed Orders</span>
+                          <strong>{orders.length}</strong>
+                        </li>
+                        <li>
+                          <span>Pending Queue</span>
+                          <strong>{pendingOrders}</strong>
+                        </li>
+                        <li>
+                          <span>Product Catalog</span>
+                          <strong>{products.length}</strong>
+                        </li>
+                      </ul>
+                    </article>
+
+                    <article className="admin-profile-card">
+                      <p className="admin-card-label">Current Preferences</p>
+                      <ul className="admin-profile-list">
+                        <li>
+                          <span>Email Alerts</span>
+                          <strong>{profileForm.alertsByEmail ? "Enabled" : "Disabled"}</strong>
+                        </li>
+                        <li>
+                          <span>SMS Alerts</span>
+                          <strong>{profileForm.alertsBySms ? "Enabled" : "Disabled"}</strong>
+                        </li>
+                        <li>
+                          <span>Timezone</span>
+                          <strong>{profileForm.timezone || "--"}</strong>
+                        </li>
+                      </ul>
+                    </article>
+                  </aside>
+                </div>
               </div>
             ) : (
               <article className="admin-placeholder">
@@ -674,6 +1043,100 @@ export default function AdminDashboard() {
                 </button>
                 <button type="submit" className="admin-btn" disabled={addProductSubmitting}>
                   {addProductSubmitting ? "Saving..." : "Save Product"}
+                </button>
+              </div>
+            </form>
+      </AccessibleModal>
+
+      <AccessibleModal
+        isOpen={isEditProductModalOpen}
+        onClose={closeEditProductModal}
+        className="admin-modal admin-add-modal"
+        overlayClassName="admin-modal-overlay"
+        ariaLabelledBy="admin-edit-product-title"
+      >
+            <button
+              type="button"
+              className="admin-modal-close"
+              onClick={closeEditProductModal}
+              aria-label="Close edit product"
+            >
+              <FiX size={20} />
+            </button>
+
+            <h3 id="admin-edit-product-title">Edit Product Details</h3>
+
+            <form className="admin-add-form" onSubmit={handleEditProductSubmit}>
+              <div className="admin-add-grid">
+                <label>
+                  Product Name
+                  <input
+                    type="text"
+                    name="name"
+                    value={editProductForm.name}
+                    onChange={handleEditProductFieldChange}
+                    required
+                  />
+                </label>
+
+                <label>
+                  Category
+                  <input
+                    type="text"
+                    name="category"
+                    value={editProductForm.category}
+                    onChange={handleEditProductFieldChange}
+                    required
+                  />
+                </label>
+
+                <label>
+                  Price
+                  <input
+                    type="number"
+                    name="price"
+                    value={editProductForm.price}
+                    onChange={handleEditProductFieldChange}
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </label>
+
+                <label>
+                  Image Filename (Locked)
+                  <input
+                    type="text"
+                    value={editProductForm.image}
+                    disabled
+                    readOnly
+                  />
+                </label>
+              </div>
+
+              <label className="admin-add-description">
+                Description
+                <textarea
+                  name="description"
+                  value={editProductForm.description}
+                  onChange={handleEditProductFieldChange}
+                  rows="4"
+                  placeholder="Update product description..."
+                />
+              </label>
+
+              <p className="admin-add-note">
+                Image editing is disabled in this modal as requested.
+              </p>
+
+              {editProductError && <p className="admin-add-info admin-add-info-error">{editProductError}</p>}
+
+              <div className="admin-add-actions">
+                <button type="button" className="admin-view-btn" onClick={closeEditProductModal}>
+                  Cancel
+                </button>
+                <button type="submit" className="admin-btn" disabled={editProductSubmitting}>
+                  {editProductSubmitting ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             </form>
