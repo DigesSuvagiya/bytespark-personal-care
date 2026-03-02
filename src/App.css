@@ -319,17 +319,18 @@
   font-family: inherit;
   transition: all 0.3s ease;
   background-color: var(--color-surface-soft);
+  color: var(--color-text-strong);
 }
 
 .form-group input:focus {
   outline: none;
   border-color: var(--color-brand);
   background-color: var(--color-surface);
-  box-shadow: 0 0 0 3px rgba(44, 157, 120, 0.1);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
 .form-group input::placeholder {
-  color: var(--color-text-faint);
+  color: var(--color-text-soft);
 }
 
 .login-btn {
@@ -418,13 +419,14 @@
   font-family: inherit;
   transition: all 0.3s ease;
   background-color: var(--color-surface-soft);
+  color: var(--color-text-strong);
 }
 
 .signup-form .form-group input:focus {
   outline: none;
   border-color: var(--color-brand);
   background-color: var(--color-surface);
-  box-shadow: 0 0 0 3px rgba(44, 157, 120, 0.1);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
 .signup-form .form-group input.error {
@@ -432,7 +434,7 @@
 }
 
 .signup-form .form-group input.error:focus {
-  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+  box-shadow: 0 0 0 3px var(--color-danger-ring);
 }
 
 .error-text {
@@ -1578,7 +1580,21 @@
   border: 1px solid var(--color-border-warm);
   border-radius: 8px;
   font-size: 0.95rem;
-  background: rgba(255,255,255,0.9);
+  background-color: var(--color-surface-soft);
+  color: var(--color-text-strong);
+  transition: all 0.3s ease;
+}
+
+.checkout-form input::placeholder {
+  color: var(--color-text-soft);
+}
+
+.checkout-form input:focus,
+.checkout-form select:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  background-color: var(--color-surface);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
 }
 
 .field-error {
@@ -2387,7 +2403,7 @@
 }
 
 .nav-link-button {
-  background: none;
+  background: transparent;
   border: none;
   padding: 0;
   margin: 0;
@@ -2396,10 +2412,17 @@
   font-size: 0.95rem;
   cursor: pointer;
   line-height: 1.2;
+  transition: color 0.3s ease;
 }
 
 .nav-link-button:hover {
+  background-color: transparent;
   color: var(--color-brand);
+  transform: none;
+}
+
+.nav-link-button:active {
+  background-color: transparent;
   transform: none;
 }
 
