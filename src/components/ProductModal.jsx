@@ -1,19 +1,18 @@
 import React from 'react'
 import { FiX } from 'react-icons/fi'
+import AccessibleModal from './AccessibleModal'
 
 export default function ProductModal({ product, isOpen, onClose, onAddToCart, cartItems, increaseQuantity, decreaseQuantity }) {
-  if (!isOpen || !product) return null
+  if (!product) return null
 
   return (
-    <div className="modal-overlay" onClick={onClose} role="presentation">
-      <div
-        className="modal-content product-modal-content"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="product-modal-title"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button className="modal-close" onClick={onClose} aria-label="Close product details">
+    <AccessibleModal
+      isOpen={isOpen}
+      onClose={onClose}
+      className="modal-content product-modal-content"
+      ariaLabelledBy="product-modal-title"
+    >
+        <button type="button" className="modal-close" onClick={onClose} aria-label="Close product details">
           <FiX size={24} />
         </button>
 
@@ -46,6 +45,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart, ca
                     return cartItem ? (
                    <div className="product-qty-controls">
   <button
+    type="button"
     className="product-qty-btn"
     onClick={(e) => {
       e.stopPropagation()
@@ -58,6 +58,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart, ca
   <span className="product-qty-value">{cartItem.quantity}</span>
 
   <button
+    type="button"
     className="product-qty-btn"
     onClick={(e) => {
       e.stopPropagation()
@@ -70,6 +71,7 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart, ca
 
            ) : (
            <button
+          type="button"
           className="add-to-cart-btn"
             onClick={(e) => {
            e.stopPropagation()
@@ -83,7 +85,6 @@ export default function ProductModal({ product, isOpen, onClose, onAddToCart, ca
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </AccessibleModal>
   )
 }

@@ -5,6 +5,7 @@ import CheckoutModal from './CheckoutModal'
 import OrderModal from './OrderModal'
 import { CartContext } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
+import AccessibleModal from './AccessibleModal'
 
 export default function CartModal({ isOpen, onClose, isLoggedIn }) {
   const {
@@ -18,8 +19,6 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
   const { token } = useAuth()
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
   const [isOrderOpen, setIsOrderOpen] = useState(false)
-
-  if (!isOpen) return null
 
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + (item.product?.price || 0) * item.quantity,
@@ -40,23 +39,24 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div
-        className="modal-content cart-modal-content"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button className="modal-close" onClick={onClose}>
+    <AccessibleModal
+      isOpen={isOpen}
+      onClose={onClose}
+      className="modal-content cart-modal-content"
+      ariaLabelledBy="cart-modal-title"
+    >
+        <button type="button" className="modal-close" onClick={onClose} aria-label="Close cart modal">
           <FiX size={24} />
         </button>
 
-        <h2>Shopping Cart</h2>
+        <h2 id="cart-modal-title">Shopping Cart</h2>
 
         {cartItems.length === 0 ? (
           <>
             <p>Your cart is empty</p>
             <div className="cart-actions">
-              <button onClick={() => setIsOrderOpen(true)}>Your Orders</button>
-              <button onClick={handleShopNow}>Shop Now</button>
+              <button type="button" onClick={() => setIsOrderOpen(true)}>Your Orders</button>
+              <button type="button" onClick={handleShopNow}>Shop Now</button>
             </div>
           </>
         ) : (
@@ -86,6 +86,7 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
 
                   <div className="cart-qty-controls">
                     <button
+                      type="button"
                       className="cart-qty-btn"
                       onClick={() => decreaseQuantity(item.product?._id)}
                       aria-label="Decrease quantity"
@@ -94,6 +95,7 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
                     </button>
                     <span className="cart-qty-value">{item.quantity}</span>
                     <button
+                      type="button"
                       className="cart-qty-btn"
                       onClick={() => increaseQuantity(item.product?._id)}
                       aria-label="Increase quantity"
@@ -107,6 +109,7 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
                   </div>
 
                   <button
+                    type="button"
                     className="cart-remove-btn"
                     onClick={() => removeFromCart(item.product?._id)}
                     aria-label="Remove from cart"
@@ -122,8 +125,8 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
             </div>
 
             <div className="cart-actions">
-              <button onClick={handleCheckout}>Proceed to Checkout</button>
-              <button onClick={onClose}>Continue Shopping</button>
+              <button type="button" onClick={handleCheckout}>Proceed to Checkout</button>
+              <button type="button" onClick={onClose}>Continue Shopping</button>
             </div>
           </>
         )}
@@ -145,7 +148,6 @@ export default function CartModal({ isOpen, onClose, isLoggedIn }) {
           isOpen={isOrderOpen}
           onClose={() => setIsOrderOpen(false)}
         />
-      </div>
-    </div>
+    </AccessibleModal>
   )
 }

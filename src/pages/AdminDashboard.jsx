@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiEye, FiX } from "react-icons/fi";
+import { FiEye, FiPlus, FiX } from "react-icons/fi";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
+import AccessibleModal from "../components/AccessibleModal";
 import "./admin-dashboard.css";
 
 const SIDEBAR_TABS = ["Orders", "Add Product", "Profile"];
@@ -28,6 +29,21 @@ export default function AdminDashboard() {
   const [statusUpdating, setStatusUpdating] = useState(false);
   const [statusUpdateMessage, setStatusUpdateMessage] = useState("");
   const [statusUpdateError, setStatusUpdateError] = useState("");
+  const [products, setProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(false);
+  const [productsError, setProductsError] = useState("");
+  const [productsNotice, setProductsNotice] = useState("");
+  const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
+  const [addProductInfo, setAddProductInfo] = useState("");
+  const [addProductError, setAddProductError] = useState("");
+  const [addProductSubmitting, setAddProductSubmitting] = useState(false);
+  const [addProductForm, setAddProductForm] = useState({
+    name: "",
+    description: "",
+    price: "",
+    category: "",
+    image: "",
+  });
 
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -49,7 +65,7 @@ export default function AdminDashboard() {
       try {
         await api.get("/auth/admin/verify");
         if (mounted) setStatus("Admin access confirmed");
-      } catch (error) {
+      } catch {
         logout();
         if (mounted) setStatus("Admin session expired or invalid");
         navigate("/", { replace: true });
@@ -94,6 +110,37 @@ export default function AdminDashboard() {
     };
   }, [activeTab]);
 
+  useEffect(() => {
+    if (activeTab !== "Add Product") return;
+
+    let mounted = true;
+
+    const fetchProducts = async () => {
+      setProductsLoading(true);
+      setProductsError("");
+
+      try {
+        const res = await api.get("/products");
+        if (mounted) {
+          setProducts(Array.isArray(res.data) ? res.data : []);
+        }
+      } catch (error) {
+        if (mounted) {
+          setProductsError(error.response?.data?.message || "Failed to load products");
+          setProducts([]);
+        }
+      } finally {
+        if (mounted) setProductsLoading(false);
+      }
+    };
+
+    fetchProducts();
+
+    return () => {
+      mounted = false;
+    };
+  }, [activeTab]);
+
   const handleLogout = () => {
     logout();
     navigate("/", { replace: true });
@@ -107,6 +154,80 @@ export default function AdminDashboard() {
     setStatusUpdating(false);
     setStatusUpdateMessage("");
     setStatusUpdateError("");
+  };
+
+  const closeAddProductModal = () => {
+    setIsAddProductModalOpen(false);
+    setAddProductInfo("");
+    setAddProductError("");
+    setAddProductSubmitting(false);
+  };
+
+  const openAddProductModal = () => {
+    setAddProductForm({
+      name: "",
+      description: "",
+      price: "",
+      category: "",
+      image: "",
+    });
+    setAddProductInfo("");
+    setAddProductError("");
+    setIsAddProductModalOpen(true);
+  };
+
+  const handleAddProductFieldChange = (event) => {
+    const { name, value } = event.target;
+    setAddProductForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddProductSubmit = async (event) => {
+    event.preventDefault();
+
+    const payload = {
+      name: addProductForm.name.trim(),
+      description: addProductForm.description.trim(),
+      price: Number(addProductForm.price),
+      category: addProductForm.category.trim(),
+      image: addProductForm.image.trim(),
+    };
+
+    if (!payload.name || !payload.category || !payload.image) {
+      setAddProductError("Name, category, and image filename are required.");
+      setAddProductInfo("");
+      return;
+    }
+
+    if (!Number.isFinite(payload.price) || payload.price <= 0) {
+      setAddProductError("Price must be greater than 0.");
+      setAddProductInfo("");
+      return;
+    }
+
+    setAddProductSubmitting(true);
+    setAddProductError("");
+    setAddProductInfo("");
+
+    try {
+      const res = await api.post("/products/admin", payload);
+      const createdProduct = res.data;
+
+      setProducts((prevProducts) => [createdProduct, ...prevProducts]);
+      setProductsNotice("Product added successfully.");
+
+      setAddProductForm({
+        name: "",
+        description: "",
+        price: "",
+        category: "",
+        image: "",
+      });
+      setIsAddProductModalOpen(false);
+    } catch (error) {
+      setAddProductError(error.response?.data?.message || "Failed to create product");
+    } finally {
+      setAddProductSubmitting(false);
+    }
   };
 
   const handleViewOrder = async (orderId) => {
@@ -244,18 +365,18 @@ export default function AdminDashboard() {
 
                             return (
                               <tr key={order._id}>
-                                <td className="admin-mono">{order._id}</td>
-                                <td>{username}</td>
-                                <td>{formatCurrency(order.totalPrice)}</td>
-                                <td>
+                                <td data-label="Order ID" className="admin-mono">{order._id}</td>
+                                <td data-label="Username">{username}</td>
+                                <td data-label="Total Price">{formatCurrency(order.totalPrice)}</td>
+                                <td data-label="Status">
                                   <span
                                     className={`admin-status-pill status-${(order.status || "placed").toLowerCase()}`}
                                   >
                                     {order.status || "placed"}
                                   </span>
                                 </td>
-                                <td>{formatDateTime(order.createdAt)}</td>
-                                <td>
+                                <td data-label="Date">{formatDateTime(order.createdAt)}</td>
+                                <td data-label="Action" className="admin-cell-action">
                                   <button
                                     type="button"
                                     className="admin-view-btn"
@@ -274,6 +395,78 @@ export default function AdminDashboard() {
                   )}
                 </div>
               </>
+            ) : activeTab === "Add Product" ? (
+              <div className="admin-products-wrap">
+                <div className="admin-products-head">
+                  <div className="admin-products-title">
+                    <h3>Current Products</h3>
+                    <p className="admin-products-note">
+                      Note: Images currently use local <strong>public/products</strong> files and may
+                      not work as expected on Vercel deployments.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="admin-btn admin-add-product-btn"
+                    onClick={openAddProductModal}
+                  >
+                    <FiPlus size={16} />
+                    Add New Product
+                  </button>
+                </div>
+                {productsNotice && <p className="admin-products-notice">{productsNotice}</p>}
+
+                {productsLoading && <p className="admin-orders-message">Loading products...</p>}
+                {!productsLoading && productsError && (
+                  <p className="admin-orders-message admin-orders-error">{productsError}</p>
+                )}
+                {!productsLoading && !productsError && products.length === 0 && (
+                  <p className="admin-orders-message">No products found.</p>
+                )}
+
+                {!productsLoading && !productsError && products.length > 0 && (
+                  <div className="admin-products-table-scroll">
+                    <table className="admin-products-table">
+                      <thead>
+                        <tr>
+                          <th>Image</th>
+                          <th>Name</th>
+                          <th>Category</th>
+                          <th>Price</th>
+                          <th>Description</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {products.map((product) => (
+                          <tr key={product._id}>
+                            <td data-label="Image">
+                              <div className="admin-product-thumb">
+                                {product.image ? (
+                                  <img
+                                    src={`/products/${product.image}`}
+                                    alt={product.name || "Product"}
+                                    onError={(event) => {
+                                      event.currentTarget.style.display = "none";
+                                    }}
+                                  />
+                                ) : (
+                                  <span className="admin-product-fallback">No image</span>
+                                )}
+                              </div>
+                            </td>
+                            <td data-label="Name">{product.name || "--"}</td>
+                            <td data-label="Category">{product.category || "--"}</td>
+                            <td data-label="Price">{formatCurrency(product.price)}</td>
+                            <td data-label="Description" className="admin-product-desc">
+                              {product.description || "--"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
             ) : (
               <article className="admin-placeholder">
                 <h3>{activeTab} Module</h3>
@@ -284,19 +477,18 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {(detailsLoading || selectedOrder || detailsError) && (
-        <div className="admin-modal-overlay" onClick={closeModal} role="presentation">
-          <div
-            className="admin-modal"
-            role="dialog"
-            aria-modal="true"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button className="admin-modal-close" onClick={closeModal} aria-label="Close details">
+      <AccessibleModal
+        isOpen={Boolean(detailsLoading || selectedOrder || detailsError)}
+        onClose={closeModal}
+        className="admin-modal"
+        overlayClassName="admin-modal-overlay"
+        ariaLabelledBy="admin-order-details-title"
+      >
+            <button type="button" className="admin-modal-close" onClick={closeModal} aria-label="Close details">
               <FiX size={20} />
             </button>
 
-            <h3>Order Details</h3>
+            <h3 id="admin-order-details-title">Order Details</h3>
 
             {detailsLoading && <p className="admin-orders-message">Loading details...</p>}
             {!detailsLoading && detailsError && (
@@ -373,10 +565,12 @@ export default function AdminDashboard() {
                       <tbody>
                         {(selectedOrder.items || []).map((item, index) => (
                           <tr key={`${item.product || item.name || "item"}-${index}`}>
-                            <td>{item.name || "--"}</td>
-                            <td>{item.quantity || 0}</td>
-                            <td>{formatCurrency(item.price)}</td>
-                            <td>{formatCurrency(Number(item.price || 0) * Number(item.quantity || 0))}</td>
+                            <td data-label="Product">{item.name || "--"}</td>
+                            <td data-label="Qty">{item.quantity || 0}</td>
+                            <td data-label="Price">{formatCurrency(item.price)}</td>
+                            <td data-label="Subtotal">
+                              {formatCurrency(Number(item.price || 0) * Number(item.quantity || 0))}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -385,9 +579,105 @@ export default function AdminDashboard() {
                 </div>
               </div>
             )}
-          </div>
-        </div>
-      )}
+      </AccessibleModal>
+
+      <AccessibleModal
+        isOpen={isAddProductModalOpen}
+        onClose={closeAddProductModal}
+        className="admin-modal admin-add-modal"
+        overlayClassName="admin-modal-overlay"
+        ariaLabelledBy="admin-add-product-title"
+      >
+            <button
+              type="button"
+              className="admin-modal-close"
+              onClick={closeAddProductModal}
+              aria-label="Close add product"
+            >
+              <FiX size={20} />
+            </button>
+
+            <h3 id="admin-add-product-title">Add New Product</h3>
+
+            <form className="admin-add-form" onSubmit={handleAddProductSubmit}>
+              <div className="admin-add-grid">
+                <label>
+                  Product Name
+                  <input
+                    type="text"
+                    name="name"
+                    value={addProductForm.name}
+                    onChange={handleAddProductFieldChange}
+                    required
+                  />
+                </label>
+
+                <label>
+                  Category
+                  <input
+                    type="text"
+                    name="category"
+                    value={addProductForm.category}
+                    onChange={handleAddProductFieldChange}
+                    placeholder="Skincare / Hair / Body Care"
+                    required
+                  />
+                </label>
+
+                <label>
+                  Price
+                  <input
+                    type="number"
+                    name="price"
+                    value={addProductForm.price}
+                    onChange={handleAddProductFieldChange}
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </label>
+
+                <label>
+                  Image Filename
+                  <input
+                    type="text"
+                    name="image"
+                    value={addProductForm.image}
+                    onChange={handleAddProductFieldChange}
+                    placeholder="example.jpg"
+                    required
+                  />
+                </label>
+              </div>
+
+              <label className="admin-add-description">
+                Description
+                <textarea
+                  name="description"
+                  value={addProductForm.description}
+                  onChange={handleAddProductFieldChange}
+                  rows="4"
+                  placeholder="Write product description..."
+                />
+              </label>
+
+              <p className="admin-add-note">
+                Image must exist in <strong>public/products</strong> with the same filename.
+              </p>
+
+              {addProductInfo && <p className="admin-add-info">{addProductInfo}</p>}
+              {addProductError && <p className="admin-add-info admin-add-info-error">{addProductError}</p>}
+
+              <div className="admin-add-actions">
+                <button type="button" className="admin-view-btn" onClick={closeAddProductModal}>
+                  Cancel
+                </button>
+                <button type="submit" className="admin-btn" disabled={addProductSubmitting}>
+                  {addProductSubmitting ? "Saving..." : "Save Product"}
+                </button>
+              </div>
+            </form>
+      </AccessibleModal>
     </main>
   );
 }

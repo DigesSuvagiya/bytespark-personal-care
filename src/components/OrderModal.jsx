@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { FiX } from 'react-icons/fi'
 import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
+import AccessibleModal from './AccessibleModal'
 
 export default function OrderModal({ isOpen, onClose }) {
   const [orders, setOrders] = useState([])
@@ -35,22 +36,19 @@ export default function OrderModal({ isOpen, onClose }) {
     fetchOrders()
   }, [isOpen, token])
 
-  if (!isOpen) return null
-
   return (
-    <div className="modal-overlay" onClick={onClose} role="presentation">
-      <div
-        className="modal-content order-modal-content"
-        role="dialog"
-        aria-modal="true"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button className="modal-close" onClick={onClose} aria-label="Close orders">
+    <AccessibleModal
+      isOpen={isOpen}
+      onClose={onClose}
+      className="modal-content order-modal-content"
+      ariaLabelledBy="orders-modal-title"
+    >
+        <button type="button" className="modal-close" onClick={onClose} aria-label="Close orders">
           <FiX size={24} />
         </button>
 
         <div className="orders-header-row">
-          <h2>My Orders</h2>
+          <h2 id="orders-modal-title">My Orders</h2>
         </div>
 
         {loading && <p>Loading orders...</p>}
@@ -87,7 +85,6 @@ export default function OrderModal({ isOpen, onClose }) {
             ))}
           </div>
         )}
-      </div>
-    </div>
+    </AccessibleModal>
   )
 }
